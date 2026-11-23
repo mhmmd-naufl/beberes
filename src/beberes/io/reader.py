@@ -32,6 +32,7 @@ class Lembar:
     baris_header: int
     baris: list[list] = field(default_factory=list)
     baris_excel: list[int] = field(default_factory=list)
+    baris_kosong_dibuang: int = 0  # baris kosong yang dibuang dari data
 
 
 def _sel_terisi(baris: list) -> list:
@@ -68,8 +69,10 @@ def _buat_lembar(nama: str, semua_baris: list[list]) -> Lembar:
     # Buang baris kosong di antara data; catat nomor baris Excel-nya.
     baris_data: list[list] = []
     baris_excel: list[int] = []
+    dibuang = 0
     for i, baris in enumerate(semua_baris[idx_header + 1 :], start=idx_header + 2):
         if not _sel_terisi(baris):
+            dibuang += 1
             continue
         baris_data.append(baris)
         baris_excel.append(i)
@@ -81,6 +84,7 @@ def _buat_lembar(nama: str, semua_baris: list[list]) -> Lembar:
         baris_header=idx_header + 1,
         baris=_rapikan(baris_data, lebar),
         baris_excel=baris_excel,
+        baris_kosong_dibuang=dibuang,
     )
 
 
