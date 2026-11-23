@@ -54,9 +54,10 @@ def _ada_yang_perlu_keputusan(hasil) -> bool:
     return False
 
 
-def _cetak_ringkasan(berkas: Path, hasil) -> None:
-    for lembar, profil, temuan, perbaikan in hasil:
-        for baris in buat_baris(str(berkas), lembar, profil, temuan, perbaikan):
+def _cetak_ringkasan(berkas: Path, hasil, profil_sesudah=None) -> None:
+    for i, (lembar, profil, temuan, perbaikan) in enumerate(hasil):
+        ps = profil_sesudah[i] if profil_sesudah else None
+        for baris in buat_baris(str(berkas), lembar, profil, temuan, perbaikan, ps):
             typer.echo(baris)
         typer.echo("")
 
@@ -88,15 +89,21 @@ def bersihkan(
     if keluar is None:
         keluar = berkas.with_stem(berkas.stem + "_bersih").with_suffix(berkas.suffix)
 
+    lembar_baru = []
     semua_perubahan = []
-    for lembar, profil, temuan, perbaikan in hasil:
+    for lembar, _, _, perbaikan in hasil:
         baru, perubahan = terapkan(lembar, perbaikan)
+        lembar_baru.append((baru, profil_lbr(baru)))
         semua_perubahan.extend(perubahan)
-        simpan(baru, keluar)
+
+    simpan([b for b, _ in lembar_baru], keluar)
+
+    for i, (_, profil_sesudah) in enumerate(lembar_baru):
+        lembar_asal, profil_asal, temuan_asal, perbaikan_asal = hasil[i]
         if laporan:
             tulis_laporan(
-                keluar.with_suffix(".laporan.md"), str(berkas), lembar, profil,
-                temuan, perbaikan,
+                keluar.with_suffix(".laporan.md"), str(berkas), lembar_asal,
+                profil_asal, temuan_asal, perbaikan_asal, profil_sesudah,
             )
             typer.echo(t("laporan_tersimpan", path=keluar.with_suffix(".laporan.md")))
 
@@ -105,7 +112,7 @@ def bersihkan(
         tulis_audit(audit, semua_perubahan)
         typer.echo(t("audit_tersimpan", path=audit))
 
-    _cetak_ringkasan(berkas, hasil)
+    _cetak_ringkasan(berkas, hasil, [p for _, p in lembar_baru])
     n_konfirmasi = sum(
         1 for _, _, _, perbaikan in hasil for p in perbaikan if not p.aman_otomatis
     )

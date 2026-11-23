@@ -5,6 +5,7 @@ PESAN = {
     "laporan_judul": "Laporan beberes: {berkas}",
     "laporan_lembar": "Sheet '{sheet}': {baris} baris, {kolom} kolom",
     "skor_kualitas": "Skor kualitas rata-rata: {skor}",
+    "skor_kualitas_pair": "Skor kualitas: {sebelum} -> {sesudah}",
     "temuan_ringkas": "Temuan: {total} (error {error}, peringatan {peringatan}, info {info})",
     "perbaikan_ringkas": "Perbaikan: {total} (otomatis {otomatis}, konfirmasi {konfirmasi})",
     "per_kolom": "Per kolom:",

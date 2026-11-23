@@ -5,6 +5,7 @@ PESAN = {
     "laporan_judul": "beberes report: {berkas}",
     "laporan_lembar": "Sheet '{sheet}': {baris} rows, {kolom} columns",
     "skor_kualitas": "Average quality score: {skor}",
+    "skor_kualitas_pair": "Quality score: {sebelum} -> {sesudah}",
     "temuan_ringkas": "Findings: {total} (error {error}, warning {peringatan}, info {info})",
     "perbaikan_ringkas": "Fixes proposed: {total} (auto {otomatis}, needs confirm {konfirmasi})",
     "per_kolom": "Per column:",

@@ -19,6 +19,7 @@ def buat_baris(
     profil: Profil,
     temuan: list[Temuan],
     perbaikan: list[Perbaikan],
+    profil_sesudah: Profil | None = None,
 ) -> list[str]:
     """Baris-baris laporan ringkas (dua bahasa via i18n)."""
     tingkat = _hitung_tingkat(temuan)
@@ -27,6 +28,12 @@ def buat_baris(
     skor_rata = (
         sum(k.skor for k in profil.kolom) / len(profil.kolom) if profil.kolom else 0
     )
+    if profil_sesudah and profil_sesudah.kolom:
+        skor_sesudah = (
+            sum(k.skor for k in profil_sesudah.kolom) / len(profil_sesudah.kolom)
+        )
+    else:
+        skor_sesudah = None
 
     baris = [
         t("laporan_judul", berkas=berkas),
@@ -35,7 +42,11 @@ def buat_baris(
             sheet=lembar.nama, baris=len(lembar.baris), kolom=len(lembar.header),
         ),
         "",
-        t("skor_kualitas", skor=f"{skor_rata:.0f}"),
+        t(
+            "skor_kualitas_pair",
+            sebelum=f"{skor_rata:.0f}",
+            sesudah=f"{skor_sesudah:.0f}" if skor_sesudah is not None else "-",
+        ),
         t(
             "temuan_ringkas",
             total=len(temuan),
@@ -71,6 +82,7 @@ def tulis_laporan(
     profil: Profil,
     temuan: list[Temuan],
     perbaikan: list[Perbaikan],
+    profil_sesudah: Profil | None = None,
 ) -> None:
-    baris = buat_baris(berkas, lembar, profil, temuan, perbaikan)
+    baris = buat_baris(berkas, lembar, profil, temuan, perbaikan, profil_sesudah)
     Path(path).write_text("\n".join(baris) + "\n", encoding="utf-8")
