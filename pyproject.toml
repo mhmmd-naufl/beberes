@@ -34,9 +34,8 @@ dev = ["pytest>=8.0", "ruff>=0.5", "faker>=30"]  # faker: scripts/buat_data_bera
 beberes = "beberes.cli.main:app"
 
 [project.urls]
-# Ganti setelah repo dibuat
-Homepage = "https://github.com/USERNAME/beberes"
-Issues = "https://github.com/USERNAME/beberes/issues"
+Homepage = "https://github.com/mhmmd-naufl/beberes"
+Issues = "https://github.com/mhmmd-naufl/beberes/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/beberes"]
