@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Data nyata: JANGAN PERNAH di-commit
+data_asli/
+*.audit.jsonl
+*_bersih.xlsx
+*_bersih.csv
+
+# Keluaran sementara
+laporan.md
+laporan.json
+
+# Hasil generator data uji (regenerable via scripts/buat_data_berantakan.py)
+data_uji/
+.env
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Node (UI)
+node_modules/

@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "beberes"
+version = "0.0.1"
+description = "Tidy up messy Indonesian spreadsheets. Data-quality engine for Excel/CSV, aware of Indonesian formats (NIK, NPWP, Rupiah, regions)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "Naufal" }]
+keywords = ["data-cleaning", "excel", "csv", "indonesia", "nik", "npwp", "spreadsheet", "data-quality"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Programming Language :: Python :: 3",
+  "Intended Audience :: End Users/Desktop",
+  "Topic :: Office/Business",
+  "Natural Language :: Indonesian",
+  "Natural Language :: English",
+]
+# Mesin tabel (pandas vs polars) belum diputuskan (D-005): sengaja belum dimasukkan.
+dependencies = [
+  "typer>=0.12",
+  "openpyxl>=3.1",
+  "pyyaml>=6.0",
+  "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.5", "faker>=30"]  # faker: scripts/buat_data_berantakan.py
+
+[project.scripts]
+beberes = "beberes.cli.main:app"
+
+[project.urls]
+# Ganti setelah repo dibuat
+Homepage = "https://github.com/USERNAME/beberes"
+Issues = "https://github.com/USERNAME/beberes/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/beberes"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["B008"]  # pola umum Typer: typer.Option(...) di default argumen
