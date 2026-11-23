@@ -12,13 +12,13 @@ Centang kotak saat selesai. Kalau ada yang diubah, catat di CHANGELOG.
 
 ## Persiapan (sebelum v0.1)
 
-- [ ] Daftarkan nama `beberes`: rilis `0.0.1` placeholder di PyPI + buat repo GitHub (D-010)
+- [x] Daftarkan nama `beberes`: rilis `0.0.1` placeholder di PyPI + buat repo GitHub (D-010)
 - [ ] Set deskripsi PyPI dan topik GitHub berbahasa Inggris (`data-cleaning`, `excel`, `csv`, `indonesia`, `nik-validator`)
 - [ ] Riset library serupa; tulis ringkasan perbandingan
-- [ ] Putuskan lisensi (D-007)
-- [ ] Kumpulkan 3-5 file berantakan nyata (disamarkan) + folder `data_asli/` di `.gitignore`
-- [ ] Siapkan repo, `pyproject.toml`, struktur folder, CI uji dasar
-- [ ] Tulis `scripts/buat_data_berantakan.py` versi awal
+- [x] Putuskan lisensi (D-007) — MIT
+- [ ] Kumpulkan 3-5 file berantakan nyata (disamarkan) + folder `data_asli/` di `.gitignore` (folder siap, menunggu data)
+- [ ] Siapkan repo, `pyproject.toml`, struktur folder, CI uji dasar (repo + struktur selesai; CI belum)
+- [x] Tulis `scripts/buat_data_berantakan.py` versi awal
 
 ## v0.1: Core dasar + CLI
 
