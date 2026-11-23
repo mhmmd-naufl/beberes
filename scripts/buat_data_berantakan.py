@@ -41,6 +41,7 @@ KOTA = [
 ]
 
 KETERANGAN_KAS = ["Iuran bulanan", "Kas lingkungan", "Arisan", "Donasi", "Lainnya"]
+SATUAN = ["pcs", "pak", "lusin", "box", "unit"]
 
 # Peluang tiap kerusakan per sel yang memenuhi syarat (0-1).
 PELUANG_KERUSAKAN = 0.12
@@ -67,7 +68,7 @@ DATASET = {
         ("Tanggal", "tanggal"),
         ("Harga", "uang"),
         ("Qty", "angka"),
-        ("Satuan", "teks"),
+        ("Satuan", "satuan"),
     ],
 }
 
@@ -104,6 +105,7 @@ def generate_baris(dataset: str, faker: Faker, rng: random.Random, n: int) -> li
             "uang": harga_acak(rng),
             "angka": qty_acak(rng),
             "teks": faker.catch_phrase() if dataset != "kas" else rng.choice(KETERANGAN_KAS),
+            "satuan": rng.choice(SATUAN),
         }
         # Kolom tanggal transaksi (kas, penjualan) pakai rentang lebih baru.
         if dataset != "peserta":
@@ -215,6 +217,7 @@ KERUSAKAN_PER_TIPE = {
     "wilayah": [("typo_wilayah", typo_wilayah), ("spasi_dan_kapital", spasi_dan_kapital)],
     "uang": [("uang_jadi_teks", uang_jadi_teks)],
     "teks": [("spasi_dan_kapital", spasi_dan_kapital)],
+    "satuan": [("spasi_dan_kapital", spasi_dan_kapital)],
     "angka": [],
 }
 
