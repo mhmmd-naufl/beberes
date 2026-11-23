@@ -24,15 +24,15 @@ Centang kotak saat selesai. Kalau ada yang diubah, catat di CHANGELOG.
 
 Cerita demo: "file peserta lomba berantakan jadi bersih dalam hitungan detik".
 
-- [ ] Reader/Writer xlsx + csv (header bergeser, sel digabung, banyak sheet)
-- [ ] Profiler: tebak tipe kolom + skor kualitas
-- [ ] Detector + fixer: spasi/kapital, tanggal campur, Rp sebagai teks, angka sebagai teks, baris kosong
-- [ ] Laporan ringkas di terminal + `laporan.md`
-- [ ] CLI dua bahasa: `periksa`/`check`, `bersihkan`/`clean`, `--dry-run`, `--keluar`/`--out`
-- [ ] Modul `i18n`: katalog pesan `id`/`en` + flag `--bahasa`/`--lang` (D-012)
-- [ ] README Inggris (`README.md`) + Indonesia (`README.id.md`) (D-011)
-- [ ] Test dengan fixture sintetis
-- [ ] README, GIF demo, rilis pertama ke PyPI
+- [x] Reader/Writer xlsx + csv (header bergeser, banyak sheet; sel digabung belum)
+- [x] Profiler: tebak tipe kolom + skor kualitas
+- [x] Detector + fixer: spasi/kapital, tanggal campur, Rp sebagai teks, angka sebagai teks, baris kosong
+- [x] Laporan ringkas di terminal + `laporan.md` (`--laporan`)
+- [x] CLI dua bahasa: `periksa`/`check`, `bersihkan`/`clean`, `--keluar`/`--out` (dry-run = default `periksa`)
+- [x] Modul `i18n`: katalog pesan `id`/`en` + flag `--bahasa`/`--lang` (D-012)
+- [x] README Inggris (`README.md`) + Indonesia (`README.id.md`) (D-011)
+- [x] Test dengan fixture sintetis (data_uji + tests/fixtures)
+- [ ] GIF demo, rilis ke PyPI (v0.1.0)
 
 ## v0.2: Validator Indonesia + aturan YAML
 
