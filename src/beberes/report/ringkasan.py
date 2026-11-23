@@ -6,6 +6,7 @@ from pathlib import Path
 from ..i18n import t
 from ..io import Lembar
 from ..model import Perbaikan, Temuan
+from ..profiling import hitung_skor
 from ..profiling.profiler import Profil
 
 
@@ -19,21 +20,13 @@ def buat_baris(
     profil: Profil,
     temuan: list[Temuan],
     perbaikan: list[Perbaikan],
-    profil_sesudah: Profil | None = None,
+    skor_sesudah: float | None = None,
 ) -> list[str]:
     """Baris-baris laporan ringkas (dua bahasa via i18n)."""
     tingkat = _hitung_tingkat(temuan)
     otomatis = sum(1 for p in perbaikan if p.aman_otomatis)
     konfirmasi = len(perbaikan) - otomatis
-    skor_rata = (
-        sum(k.skor for k in profil.kolom) / len(profil.kolom) if profil.kolom else 0
-    )
-    if profil_sesudah and profil_sesudah.kolom:
-        skor_sesudah = (
-            sum(k.skor for k in profil_sesudah.kolom) / len(profil_sesudah.kolom)
-        )
-    else:
-        skor_sesudah = None
+    skor_sebelum = hitung_skor(profil, temuan)
 
     baris = [
         t("laporan_judul", berkas=berkas),
@@ -44,7 +37,7 @@ def buat_baris(
         "",
         t(
             "skor_kualitas_pair",
-            sebelum=f"{skor_rata:.0f}",
+            sebelum=f"{skor_sebelum:.0f}",
             sesudah=f"{skor_sesudah:.0f}" if skor_sesudah is not None else "-",
         ),
         t(
@@ -82,7 +75,7 @@ def tulis_laporan(
     profil: Profil,
     temuan: list[Temuan],
     perbaikan: list[Perbaikan],
-    profil_sesudah: Profil | None = None,
+    skor_sesudah: float | None = None,
 ) -> None:
-    baris = buat_baris(berkas, lembar, profil, temuan, perbaikan, profil_sesudah)
+    baris = buat_baris(berkas, lembar, profil, temuan, perbaikan, skor_sesudah)
     Path(path).write_text("\n".join(baris) + "\n", encoding="utf-8")

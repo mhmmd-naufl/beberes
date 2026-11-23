@@ -8,7 +8,7 @@ from beberes.detectors import jalankan as deteksi_semua
 from beberes.fixers import usulkan_semua
 from beberes.i18n import atur_bahasa, t
 from beberes.io import baca_berkas, simpan
-from beberes.profiling import profil_lbr
+from beberes.profiling import hitung_skor, profil_lbr
 from beberes.report import buat_baris, terapkan, tulis_audit, tulis_laporan
 
 app = typer.Typer(
@@ -54,10 +54,10 @@ def _ada_yang_perlu_keputusan(hasil) -> bool:
     return False
 
 
-def _cetak_ringkasan(berkas: Path, hasil, profil_sesudah=None) -> None:
+def _cetak_ringkasan(berkas: Path, hasil, skor_sesudah=None) -> None:
     for i, (lembar, profil, temuan, perbaikan) in enumerate(hasil):
-        ps = profil_sesudah[i] if profil_sesudah else None
-        for baris in buat_baris(str(berkas), lembar, profil, temuan, perbaikan, ps):
+        ss = skor_sesudah[i] if skor_sesudah else None
+        for baris in buat_baris(str(berkas), lembar, profil, temuan, perbaikan, ss):
             typer.echo(baris)
         typer.echo("")
 
@@ -90,20 +90,24 @@ def bersihkan(
         keluar = berkas.with_stem(berkas.stem + "_bersih").with_suffix(berkas.suffix)
 
     lembar_baru = []
+    skor_sesudah = []
     semua_perubahan = []
     for lembar, _, _, perbaikan in hasil:
         baru, perubahan = terapkan(lembar, perbaikan)
-        lembar_baru.append((baru, profil_lbr(baru)))
+        profil_sesudah = profil_lbr(baru)
+        temuan_sesudah = deteksi_semua(baru, profil_sesudah)
+        skor_sesudah.append(hitung_skor(profil_sesudah, temuan_sesudah))
+        lembar_baru.append(baru)
         semua_perubahan.extend(perubahan)
 
-    simpan([b for b, _ in lembar_baru], keluar)
+    simpan(lembar_baru, keluar)
 
-    for i, (_, profil_sesudah) in enumerate(lembar_baru):
-        lembar_asal, profil_asal, temuan_asal, perbaikan_asal = hasil[i]
-        if laporan:
+    if laporan:
+        for i, skor in enumerate(skor_sesudah):
+            lembar_asal, profil_asal, temuan_asal, perbaikan_asal = hasil[i]
             tulis_laporan(
                 keluar.with_suffix(".laporan.md"), str(berkas), lembar_asal,
-                profil_asal, temuan_asal, perbaikan_asal, profil_sesudah,
+                profil_asal, temuan_asal, perbaikan_asal, skor,
             )
             typer.echo(t("laporan_tersimpan", path=keluar.with_suffix(".laporan.md")))
 
@@ -112,7 +116,7 @@ def bersihkan(
         tulis_audit(audit, semua_perubahan)
         typer.echo(t("audit_tersimpan", path=audit))
 
-    _cetak_ringkasan(berkas, hasil, [p for _, p in lembar_baru])
+    _cetak_ringkasan(berkas, hasil, skor_sesudah)
     n_konfirmasi = sum(
         1 for _, _, _, perbaikan in hasil for p in perbaikan if not p.aman_otomatis
     )
