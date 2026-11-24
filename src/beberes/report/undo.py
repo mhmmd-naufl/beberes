@@ -63,7 +63,11 @@ def urungkan(berkas: str | Path, log: str | Path) -> list[Lembar]:
         if pos is None:
             continue
         c, no_excel = pos
+        # sheet CSV dinamai dari nama file — bisa beda dengan file hasil,
+        # jadi untuk file 1-sheet pakai lembar itu langsung.
         lembar = next((x for x in lembar_list if x.nama == sheet), None)
+        if lembar is None and len(lembar_list) == 1:
+            lembar = lembar_list[0]
         if lembar is None:
             continue
         try:
