@@ -92,31 +92,30 @@ def main() -> None:
         ),
     ]
 
-    frames: list[Image.Image] = []
-    jeda = 0  # frame jeda hitam di antara perintah
+    frames: list[tuple[Image.Image, int]] = []  # (frame, durasi ms)
 
     # frame judul
-    frames.append(_frame(
+    frames.append((_frame(
         ["# beberes", "", "# Tidy up messy Indonesian spreadsheets.",
          "# demo: periksa -> bersihkan -> urungkan"], "beberes demo",
-    ))
+    ), 2000))
     for cmd, label in perintah:
-        frames.append(_frame([f"$ {label}"], ""))
+        frames.append((_frame([f"$ {label}"], ""), 1200))
         keluaran = _jalankan(cmd)
         akumulasi: list[str] = []
         for ln in _potong(keluaran):
             akumulasi.append(ln)
-            frames.append(_frame(akumulasi[-18:]))  # sliding window bawah
-        jeda += 6
+            frames.append((_frame(akumulasi[-18:]), 380))
+        # jeda baca di akhir tiap perintah: ulang frame terakhir 2x
+        frames.append((frames[-1][0], 1400))
+        frames.append((frames[-1][0], 700))
 
-    # tiap frame ~0.12s; duplikat frame terakhir tiap perintah utk jeda baca
-    durasi = []
-    for i in range(len(frames)):
-        durasi.append(140 if i == 0 or frames[i] is not frames[i - 1] else 500)
+    durasi = [d for _, d in frames]
+    imgs = [f for f, _ in frames]
 
     out = DASAR / "docs" / "demo.gif"
-    frames[0].save(
-        out, save_all=True, append_images=frames[1:],
+    imgs[0].save(
+        out, save_all=True, append_images=imgs[1:],
         duration=durasi, loop=0, optimize=True,
     )
     print(f"GIF tersimpan: {out} ({len(frames)} frame, {out.stat().st_size/1024:.0f} KB)")
