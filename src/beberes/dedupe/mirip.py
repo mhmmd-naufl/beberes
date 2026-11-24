@@ -46,7 +46,7 @@ def deteksi(lembar: Lembar, profil: Profil) -> list[Temuan]:
         nilai = _norm(baris[c])
         if len(nilai) < 3 or not any(ch.isalpha() for ch in nilai):
             continue  # tanggal/angka murni bukan nama -> hindari false positive
-        blok.setdefault(nilai[0], []).append((i, nilai))
+        blok.setdefault(nilai[:3], []).append((i, nilai))
 
     pasangan = []
     for grup in blok.values():
@@ -58,6 +58,9 @@ def deteksi(lembar: Lembar, profil: Profil) -> list[Temuan]:
                 j, y = grup[b]
                 if x == y:
                     continue  # duplikat persis -> DUP001
+                # prefilter murah: panjang beda jauh -> tidak mungkin mirip
+                if abs(len(x) - len(y)) > max(len(x), len(y)) * 0.4:
+                    continue
                 rasio = difflib.SequenceMatcher(None, x, y).ratio()
                 if rasio >= AMBANG:
                     pasangan.append((rasio, i, j, x, y))
