@@ -42,7 +42,7 @@ Cerita demo: "data warga dengan NIK, HP, dan wilayah yang dicek otomatis".
 - [ ] Data wilayah resmi (cek lisensi) + normalisasi nama wilayah (typo) — subset awal ada di `src/beberes/data/wilayah.json`, menunggu data resmi
 - [x] Rule engine YAML + validasi skema + pesan error yang jelas
 - [x] Aturan bawaan (template) untuk jenis data umum: peserta, kas, penjualan
-- [ ] Dokumentasi aturan lengkap
+- [x] Dokumentasi aturan lengkap (`docs/07-aturan-yaml.md`)
 
 ## v0.3: Dedupe + audit log + undo
 
