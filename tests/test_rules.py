@@ -48,3 +48,32 @@ def test_yaml_salah_tipe_ditolak(tmp_path):
         raise AssertionError("harus error")
     except ValueError as e:
         assert "hantu" in str(e)
+
+
+def test_email_validator():
+    from beberes.validators import periksa_email
+    assert periksa_email("budi@contoh.id") == []
+    assert periksa_email("bukan-email") == ["EMAIL001"]
+    assert periksa_email(None) == []
+
+
+def test_kategori_di_luar_daftar(tmp_path):
+    from beberes.rules.engine import periksa
+    from beberes.rules.loader import muat
+
+    p = tmp_path / "kat.yaml"
+    p.write_text(
+        "versi: 1\nkolom:\n  Status:\n    tipe: kategori\n"
+        "    aturan: [Lunas, Belum]\n",
+        encoding="utf-8",
+    )
+    aturan = muat(p)
+    lembar = Lembar(
+        nama="S", header=["Status"], baris_header=1,
+        baris=[["Lunas"], ["HILANG"], ["Belum"]],
+        baris_excel=[2, 3, 4],
+    )
+    temuan = periksa(lembar, aturan)
+    kat = [t for t in temuan if t.kode == "KAT001"]
+    assert len(kat) == 1
+    assert kat[0].baris == [3]

@@ -42,8 +42,8 @@ Itu saja — sudah cukup untuk validator dasar.
 | `npwp` | pola 15/16 digit / format lama | NPWP001 |
 | `plat` | pola huruf-angka-huruf | PLAT001 |
 | `wilayah` | nama kota/provinsi tidak dikenal | WIL001 |
-| `kategori` | nilai di luar daftar (opsional `aturan`) | — (belum ada) |
-| `email` | pola email (belum ada validator) | — |
+| `kategori` | nilai di luar daftar (wajib `aturan: [...]`) | KAT001 |
+| `email` | pola email dasar | EMAIL001 |
 
 Field tambahan opsional per kolom (untuk pengembangan lanjut):
 

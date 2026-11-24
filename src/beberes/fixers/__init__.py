@@ -14,6 +14,7 @@ _PETA = {
     "TGL002": tanggal.perbaiki,
     "HP001": perbaiki_rules,
     "NAMA001": perbaiki_rules,
+    "WIL001": perbaiki_rules,
 }
 
 

@@ -2,6 +2,12 @@
 
 Mengikuti [Keep a Changelog](https://keepachangelog.com/) dan [Semantic Versioning](https://semver.org/).
 
+## [Belum dirilis]
+
+### Ditambahkan
+- `email` validator (EMAIL001) + `kategori` check via `aturan: [...]` (KAT001)
+- WIL001 kini punya perbaikan konfirmasi (saran typo wilayah -> `--konfirmasi`)
+
 ## [0.3.1] - 2026-11-24
 
 Polish: data wilayah resmi + GIF demo + .xls.

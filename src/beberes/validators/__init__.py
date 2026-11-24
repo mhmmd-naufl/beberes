@@ -1,3 +1,4 @@
+from .email import periksa_email
 from .gelar import GELAR, periksa_gelar, pisah_gelar
 from .hp import normalisasi_hp, periksa_hp
 from .nik import periksa_nik
@@ -25,4 +26,5 @@ __all__ = [
     "induk_wilayah",
     "kode_wilayah_valid",
     "nama_wilayah",
+    "periksa_email",
 ]

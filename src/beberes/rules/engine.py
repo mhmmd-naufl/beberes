@@ -9,6 +9,7 @@ from ..model import Temuan
 from ..validators import (
     induk_wilayah,
     normalisasi_wilayah,
+    periksa_email,
     periksa_gelar,
     periksa_hp,
     periksa_nik,
@@ -28,6 +29,7 @@ VALIDATOR = {
     "plat": periksa_plat,
     "nama": periksa_gelar,
     "wilayah": periksa_wilayah,
+    "email": periksa_email,
 }
 
 PESAN = {
@@ -41,6 +43,8 @@ PESAN = {
     "NAMA001": "Gelar menempel di nama",
     "WIL001": "Nama wilayah tidak dikenal",
     "WIL002": "Kecamatan tidak cocok dengan kabupaten induknya",
+    "EMAIL001": "Format email tidak valid",
+    "KAT001": "Nilai di luar daftar yang diizinkan",
 }
 
 
@@ -57,18 +61,31 @@ def periksa(lembar: Lembar, aturan: Aturan) -> list[Temuan]:
     hasil = []
     for nama_kolom, spec in aturan.kolom.items():
         fungsi = VALIDATOR.get(spec.tipe)
-        if fungsi is None:
+        if fungsi is None and not (spec.tipe == "kategori" and spec.aturan):
             continue
         c = _cari_kolom(lembar, nama_kolom)
         if c is None:
             continue
         ketemu: dict[str, list] = {}
-        for baris, no_excel in zip(lembar.baris, lembar.baris_excel, strict=False):
-            nilai = baris[c] if c < len(baris) else None
-            if nilai is None or str(nilai).strip() == "":
-                continue
-            for kode in fungsi(nilai):
-                ketemu.setdefault(kode, []).append((no_excel, nilai))
+        if fungsi is not None:
+            for baris, no_excel in zip(lembar.baris, lembar.baris_excel, strict=False):
+                nilai = baris[c] if c < len(baris) else None
+                if nilai is None or str(nilai).strip() == "":
+                    continue
+                for kode in fungsi(nilai):
+                    ketemu.setdefault(kode, []).append((no_excel, nilai))
+        # Kategori: nilai harus ada di daftar spec.aturan
+        if spec.tipe == "kategori" and spec.aturan:
+            diizinkan = {str(x).strip().lower() for x in spec.aturan}
+            for baris, no_excel in zip(lembar.baris, lembar.baris_excel, strict=False):
+                if c >= len(baris):
+                    continue
+                nilai = baris[c]
+                if nilai is None or str(nilai).strip() == "":
+                    continue
+                if str(nilai).strip().lower() not in diizinkan:
+                    ketemu.setdefault("KAT001", []).append((no_excel, nilai))
+
         # WIL002: kecamatan vs kabupaten induk (kolom induk di YAML)
         if spec.tipe == "wilayah" and spec.induk:
             ci = _cari_kolom(lembar, spec.induk)
