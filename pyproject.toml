@@ -32,7 +32,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "ruff>=0.5", "faker>=30"]  # faker: scripts/buat_data_berantakan.py
+dev = ["pytest>=8.0", "ruff>=0.5", "faker>=30", "httpx2"]  # faker: generator; httpx2: fastapi TestClient
 
 [project.scripts]
 beberes = "beberes.cli.main:app"
