@@ -44,8 +44,8 @@ def deteksi(lembar: Lembar, profil: Profil) -> list[Temuan]:
         if c >= len(baris):
             continue
         nilai = _norm(baris[c])
-        if len(nilai) < 3:
-            continue
+        if len(nilai) < 3 or not any(ch.isalpha() for ch in nilai):
+            continue  # tanggal/angka murni bukan nama -> hindari false positive
         blok.setdefault(nilai[0], []).append((i, nilai))
 
     pasangan = []

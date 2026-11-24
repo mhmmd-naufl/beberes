@@ -34,7 +34,8 @@ def _semua() -> list[dict]:
 
 @lru_cache(maxsize=1)
 def _daftar() -> list[str]:
-    return sorted({w["nama"] for w in _semua()})
+    # normalisasi nama resmi juga ('Kabupaten Bogor' -> 'Bogor')
+    return sorted({normalisasi_wilayah(w["nama"]) for w in _semua()})
 
 
 @lru_cache(maxsize=1)
@@ -102,7 +103,9 @@ def _induk_per_kecamatan() -> dict[str, str]:
     for w in _mentah().get("kecamatan", []):
         induk_nama = _nama_per_kode().get(w.get("induk") or "")
         if induk_nama:
-            hasil[w["nama"].strip().lower()] = induk_nama.strip().lower()
+            hasil[normalisasi_wilayah(w["nama"]).lower()] = (
+                normalisasi_wilayah(induk_nama).lower()
+            )
     return hasil
 
 
