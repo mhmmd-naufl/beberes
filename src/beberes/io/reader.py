@@ -1,9 +1,13 @@
-"""Reader file .xlsx / .csv -> representasi internal Lembar.
+"""Reader file .xlsx / .xls / .csv -> representasi internal Lembar.
 
 Menangani pola umum file berantakan (docs/02):
 - header tidak di baris 1 (ada baris judul/kosong di atasnya)
 - sel kosong -> None
 - csv dengan encoding non-UTF8 dan delimiter ';'
+- .xls lama (Excel 97-2003) via xlrd
+
+Catatan: writer hanya menulis .xlsx/.csv — input .xls tetap bisa
+dibersihkan, output disarankan .xlsx.
 
 TODO: sel digabung (merged cells) dan sheet tersembunyi belum ditangani penuh.
 """
@@ -170,6 +174,18 @@ def _baca_xlsx(path: Path) -> list[Lembar]:
     return lembar
 
 
+def _baca_xls(path: Path) -> list[Lembar]:
+    """Baca .xls lama via xlrd (hanya format biner Excel 97-2003)."""
+    import xlrd
+
+    wb = xlrd.open_workbook(path)
+    lembar = []
+    for ws in wb.sheets():
+        semua = [list(ws.row_values(i)) for i in range(ws.nrows)]
+        lembar.append(_buat_lembar(ws.name, semua))
+    return lembar
+
+
 def _deteksi_encoding(path: Path) -> str:
     """Coba utf-8-sig dulu, lalu cp1252, terakhir latin-1 (tidak pernah gagal)."""
     data = path.read_bytes()
@@ -207,4 +223,8 @@ def baca_berkas(path: str | Path) -> list[Lembar]:
         return _baca_csv(path)
     if path.suffix.lower() in (".xlsx", ".xlsm"):
         return _baca_xlsx(path)
-    raise ValueError(f"Format tidak didukung: {path.suffix} (dukung .xlsx dan .csv)")
+    if path.suffix.lower() == ".xls":
+        return _baca_xls(path)
+    raise ValueError(
+        f"Format tidak didukung: {path.suffix} (dukung .xlsx, .xlsm, .xls, .csv)"
+    )

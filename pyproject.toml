@@ -25,6 +25,7 @@ dependencies = [
   "openpyxl>=3.1",
   "pyyaml>=6.0",
   "pydantic>=2.0",
+  "xlrd>=2.0",  # format .xls lama (xlrd 2.x hanya baca .xls)
 ]
 
 [project.optional-dependencies]

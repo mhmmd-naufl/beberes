@@ -5,7 +5,7 @@
 
 🇬🇧 [English version](README.md)
 
-**Status:** perencanaan (pra-v0.1)
+**Status:** v0.3.0 — dedupe, undo, mode konfirmasi, benchmark akurasi
 
 ## Masalahnya
 
@@ -31,11 +31,17 @@ pip install beberes
 # lihat masalah tanpa mengubah apa pun (default aman)
 beberes periksa data.xlsx          # alias Inggris: beberes check
 
-# terapkan perbaikan, simpan ke file baru + laporan
+# terapkan perbaikan, simpan ke file baru + laporan + audit log
 beberes bersihkan data.xlsx --keluar data_bersih.xlsx --laporan   # alias: beberes clean
 
-# pakai aturan sendiri
-beberes bersihkan data.xlsx --aturan aturan.yaml
+# aturan domain Indonesia (NIK, HP, wilayah, dll.)
+beberes bersihkan data.xlsx --aturan peserta.yaml
+
+# konfirmasi interaktif untuk perbaikan ambigu (tanggal dd/mm, gelar, dll.)
+beberes bersihkan data.xlsx --konfirmasi
+
+# undo perubahan dari audit log
+beberes urungkan data_bersih.xlsx --log data_bersih.audit.jsonl --keluar dipulihkan.xlsx
 
 # bahasa pesan/laporan: id atau en (default mengikuti bahasa sistem)
 beberes periksa data.xlsx --bahasa en
