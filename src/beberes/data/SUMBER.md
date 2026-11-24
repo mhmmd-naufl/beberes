@@ -2,13 +2,22 @@
 
 ## `wilayah.json`
 
-- **Provinsi**: daftar 34 provinsi Indonesia — fakta publik yang stabil.
-- **Kota**: subset nama kota yang dipakai `scripts/buat_data_berantakan.py`.
+- **Sumber**: https://github.com/cahyadsn/wilayah — lisensi **MIT**
+- **Data**: Kode & nama wilayah sesuai **Kepmendagri No 300.2.2-2138 Tahun 2025**
+- **Isi**: provinsi (38), kabupaten/kota (514), kecamatan (7.265)
+- **Format SQL asli**: `db/wilayah.sql` di repo tersebut (di-parse ke JSON)
+- **Level desa/kelurahan (83.345)**: belum dibundel — ukuran file terlalu
+  besar untuk package inti. Bisa ditambah sebagai file opsional nanti.
 
-**Status**: SUBSET AWAL, bukan data wilayah resmi lengkap.
-Rencana penggantian (docs/04 bagian C):
-- bps.go.id — kode & nama wilayah sampai kecamatan
-- data.go.id — Satu Data Indonesia
-- Repo GitHub kode wilayah (cek lisensi dulu)
+### Atribusi
 
-Sebelum dibundel versi lengkap, catat sumber + lisensi di file ini.
+Data wilayah di file ini berasal dari cahyadsn/wilayah (MIT License),
+yang merujuk Keputusan Menteri Dalam Negeri terbaru.
+
+### regenerasi
+
+```bash
+curl -sL -o /tmp/wilayah.sql \
+  https://raw.githubusercontent.com/cahyadsn/wilayah/master/db/wilayah.sql
+# lalu parse INSERT INTO wilayah VALUES (...) -> JSON
+```

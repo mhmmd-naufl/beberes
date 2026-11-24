@@ -1,7 +1,12 @@
-"""Validator wilayah (kota/provinsi) terhadap data referensi.
+"""Validator wilayah (kabupaten/kota/provinsi/kecamatan) terhadap data resmi.
 
-- Normalisasi: rapikan spasi, 'Kota X'/'Kab. X' -> 'X', kapitalisasi.
-- Cocokkan exact dulu; kalau gagal, fuzzy-match (difflib) untuk saran.
+Data referensi: `src/beberes/data/wilayah.json` — hasil parse repo
+cahyadsn/wilayah (lisensi MIT, Kepmendagri 300.2.2-2138 Tahun 2025).
+Level desa/kelurahan belum dibundel (ukuran file).
+
+- Normalisasi: rapikan spasi, 'Kota X'/'Kab. X'/'Kec. X' -> 'X'.
+- Cocokkan exact nama (semua level digabung); fuzzy-match untuk saran.
+- `kode_wilayah` dipakai validator NIK untuk cek kode provinsi/kab/kec.
 
 Kode masalah:
   WIL001 - nama wilayah tidak dikenal (mungkin typo)
@@ -17,12 +22,34 @@ _DATA = Path(__file__).resolve().parent.parent / "data" / "wilayah.json"
 
 
 @lru_cache(maxsize=1)
+def _mentah() -> dict:
+    return json.loads(_DATA.read_text(encoding="utf-8"))
+
+
+@lru_cache(maxsize=1)
+def _semua() -> list[dict]:
+    d = _mentah()
+    return d.get("provinsi", []) + d.get("kabupaten", []) + d.get("kecamatan", [])
+
+
+@lru_cache(maxsize=1)
 def _daftar() -> list[str]:
-    data = json.loads(_DATA.read_text(encoding="utf-8"))
-    return sorted(set(data.get("provinsi", []) + data.get("kota", [])))
+    return sorted({w["nama"] for w in _semua()})
 
 
-_PREFIX = re.compile(r"^(kota|kabupaten|kab|kecamatan|kec)\.?\s+", re.IGNORECASE)
+@lru_cache(maxsize=1)
+def _kode_set() -> set[str]:
+    return {w["kode"] for w in _semua()}
+
+
+@lru_cache(maxsize=1)
+def _nama_per_kode() -> dict[str, str]:
+    return {w["kode"]: w["nama"] for w in _semua()}
+
+
+_PREFIX = re.compile(
+    r"^(kota|kabupaten|kab|kecamatan|kec|provinsi|prop)\.?\s+", re.IGNORECASE
+)
 _SPASI = re.compile(r"\s+")
 
 
@@ -53,3 +80,16 @@ def periksa_wilayah(nilai) -> list[str]:
     if normalisasi_wilayah(teks) in _daftar():
         return []
     return ["WIL001"]
+
+
+def kode_wilayah_valid(kode_6_digit: str) -> bool:
+    """Cek apakah kode wilayah 6 digit (prov+kab+kec) ada di data resmi.
+
+    Dipakai validator NIK untuk NIK002.
+    """
+    return kode_6_digit in _kode_set()
+
+
+def nama_wilayah(kode: str) -> str | None:
+    """Nama wilayah dari kode (mis. '32.01.01' atau segmen NIK)."""
+    return _nama_per_kode().get(kode)

@@ -47,6 +47,17 @@ def _tanggal_lahir_valid(enam_digit: str) -> bool:
     return True
 
 
+def _kode_wilayah_ada(enam_digit: str) -> bool:
+    """Cek kode prov+kab+kec (6 digit NIK) terhadap data wilayah resmi."""
+    try:
+        from .wilayah import kode_wilayah_valid
+        titik = f"{enam_digit[0:2]}.{enam_digit[2:4]}.{enam_digit[4:6]}"
+        return kode_wilayah_valid(titik)
+    except Exception:
+        # data wilayah belum ada -> fallback ke daftar provinsi lama
+        return int(enam_digit[0:2]) in _KODE_PROVINSI_VALID
+
+
 def periksa_nik(nilai) -> list[str]:
     """Kembalikan daftar kode masalah untuk satu nilai NIK."""
     if nilai is None:
@@ -56,8 +67,7 @@ def periksa_nik(nilai) -> list[str]:
         return ["NIK001"]
 
     kode = []
-    provinsi = int(teks[0:2])
-    if provinsi not in _KODE_PROVINSI_VALID:
+    if not _kode_wilayah_ada(teks[0:6]):
         kode.append("NIK002")
     if not _tanggal_lahir_valid(teks[6:12]):
         kode.append("NIK003")
