@@ -13,7 +13,7 @@ from ..profiling.profiler import Profil
 
 AMBANG = 0.85
 _MAKS_CONTOH = 10
-_MAKS_GRUP_BLOKIR = 500  # blok terlalu besar -> lewati (file raksasa)
+_MAKS_GRUP_BLOKIR = 200  # blok terlalu besar -> lewati (file raksasa)
 
 _RE_NONALFA = re.compile(r"[^a-z0-9 ]+")
 _SPASI = re.compile(r"\s+")
@@ -46,7 +46,9 @@ def deteksi(lembar: Lembar, profil: Profil) -> list[Temuan]:
         nilai = _norm(baris[c])
         if len(nilai) < 3 or not any(ch.isalpha() for ch in nilai):
             continue  # tanggal/angka murni bukan nama -> hindari false positive
-        blok.setdefault(nilai[:3], []).append((i, nilai))
+        # blok: huruf pertama + bucket panjang — typo umumnya mirip panjang,
+        # jadi 'muhammad' vs 'mohammad' tetap satu blok tapi blok lebih kecil
+        blok.setdefault((nilai[0], len(nilai) // 5), []).append((i, nilai))
 
     pasangan = []
     for grup in blok.values():
