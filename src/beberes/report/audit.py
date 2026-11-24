@@ -41,12 +41,16 @@ def terapkan(lembar: Lembar, perbaikan: list[Perbaikan]) -> tuple[Lembar, list[d
         if lama == p.nilai_baru:
             continue
         baris[r][p.kolom_idx] = p.nilai_baru
+        # baris_output: posisi baris di file HASIL (writer menulis sekuensial,
+        # header di baris 1) — dipakai undo; baris_excel = posisi di file asli.
+        baris_output = r + (1 if lembar.header else 0) + 1
         perubahan.append({
             "sheet": lembar.nama,
             "sel": _sel_ref(p.kolom_idx, p.baris_excel),
             "kolom": p.kolom,
             "kolom_idx": p.kolom_idx,
             "baris_excel": p.baris_excel,
+            "baris_output": baris_output,
             "nilai_lama": lama,
             "nilai_baru": p.nilai_baru,
             "kode": p.kode,

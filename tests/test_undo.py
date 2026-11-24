@@ -52,3 +52,37 @@ def test_baca_log_jsonl(tmp_path):
     )
     from beberes.report.undo import _baca_log
     assert len(_baca_log(log)) == 1
+
+
+def test_undo_setelah_baris_kosong_dibuang(tmp_path):
+    """Regresi: baris_output harus dipakai, bukan baris_excel asli."""
+    from openpyxl import Workbook
+
+    from beberes.io import baca_berkas, simpan
+
+    f = tmp_path / "asli.xlsx"
+    wb = Workbook()
+    ws = wb.active
+    ws.append(["Nama", "Kota"])
+    ws.append(["Ani", "Bandung"])
+    ws.append([None, None])          # baris kosong di tengah -> dibuang reader
+    ws.append(["  Budi  ", "Medan"]) # baris_excel=4, tapi output row=3
+    wb.save(f)
+
+    lembar = baca_berkas(f)[0]
+    _, perubahan = terapkan(lembar, [Perbaikan(
+        kode="FMT001", aturan="x", baris_excel=4, kolom_idx=0,
+        kolom="Nama", nilai_lama="  Budi  ", nilai_baru="Budi",
+    )])
+    assert perubahan[0]["baris_output"] == 3
+    assert perubahan[0]["baris_excel"] == 4
+
+    log = tmp_path / "a.jsonl"
+    tulis_audit(log, perubahan)
+    hasil = tmp_path / "hasil.xlsx"
+    simpan(terapkan(lembar, [Perbaikan(
+        kode="FMT001", aturan="x", baris_excel=4, kolom_idx=0,
+        kolom="Nama", nilai_lama="  Budi  ", nilai_baru="Budi",
+    )])[0], hasil)
+    undo = urungkan(hasil, log)
+    assert undo[0].baris[1][0] == "  Budi  "

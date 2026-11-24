@@ -28,10 +28,13 @@ def _baca_log(path: Path) -> list[dict]:
 def _posisi_sel(entri: dict) -> tuple[int, int] | None:
     """(kolom_idx, baris_excel) dari entri audit.
 
-    Utama: kolom_idx + baris_excel (format baru). Cadangan: parse "E6".
+    Utama: kolom_idx + baris_output (posisi di file hasil — akurat walau
+    baris kosong dibuang). Cadangan: baris_excel / parse "E6".
     """
-    if "kolom_idx" in entri and "baris_excel" in entri:
-        return int(entri["kolom_idx"]), int(entri["baris_excel"])
+    if "kolom_idx" in entri:
+        baris = entri.get("baris_output") or entri.get("baris_excel")
+        if baris is not None:
+            return int(entri["kolom_idx"]), int(baris)
     sel = entri.get("sel", "")
     if not sel:
         return None
