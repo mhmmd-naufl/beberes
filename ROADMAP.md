@@ -38,10 +38,10 @@ Cerita demo: "file peserta lomba berantakan jadi bersih dalam hitungan detik".
 
 Cerita demo: "data warga dengan NIK, HP, dan wilayah yang dicek otomatis".
 
-- [ ] Validator: NIK (struktur), HP (normalisasi +62), NPWP, plat, gelar di nama
-- [ ] Data wilayah resmi (cek lisensi) + normalisasi nama wilayah (typo)
-- [ ] Rule engine YAML + validasi skema + pesan error yang jelas
-- [ ] Aturan bawaan (template) untuk jenis data umum: peserta, kas, penjualan
+- [x] Validator: NIK (struktur), HP (normalisasi +62), NPWP, plat, gelar di nama
+- [ ] Data wilayah resmi (cek lisensi) + normalisasi nama wilayah (typo) — subset awal ada di `src/beberes/data/wilayah.json`, menunggu data resmi
+- [x] Rule engine YAML + validasi skema + pesan error yang jelas
+- [x] Aturan bawaan (template) untuk jenis data umum: peserta, kas, penjualan
 - [ ] Dokumentasi aturan lengkap
 
 ## v0.3: Dedupe + audit log + undo
