@@ -48,11 +48,11 @@ Cerita demo: "data warga dengan NIK, HP, dan wilayah yang dicek otomatis".
 
 Cerita demo: "14 pasangan nama mirip ditemukan, dicek, dan digabung dengan aman".
 
-- [ ] Duplikat persis + fuzzy (blocking + rapidfuzz), ambang konfigurasi
-- [ ] Mode konfirmasi untuk perbaikan yang mengubah makna
-- [ ] Audit log `.jsonl` + perintah `urungkan`
-- [ ] Benchmark akurasi (precision/recall) pada data sintetis
-- [ ] Putuskan pandas vs polars berdasarkan hasil ukur (D-005)
+- [x] Duplikat persis + fuzzy (difflib + blocking; rapidfuzz ditunda)
+- [x] Mode konfirmasi untuk perbaikan yang mengubah makna (`--konfirmasi`)
+- [x] Audit log `.jsonl` + perintah `urungkan`/`undo`
+- [x] Benchmark akurasi (precision/recall) pada data sintetis (`docs/benchmark.md`)
+- [ ] Putuskan pandas vs polars berdasarkan hasil ukur (D-005) — ditunda, core belum butuh
 
 ## v0.5: UI lokal
 

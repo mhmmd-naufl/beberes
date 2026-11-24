@@ -2,6 +2,24 @@
 
 Mengikuti [Keep a Changelog](https://keepachangelog.com/) dan [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-11-24
+
+Dedupe + audit undo + mode konfirmasi + benchmark.
+
+### Ditambahkan
+- `dedupe/`: DUP001 (duplikat persis) + DUP002 (duplikat mirip fuzzy via difflib + blocking) — hanya ditandai, tidak pernah dihapus otomatis
+- `urungkan`/`undo`: kembalikan perubahan dari audit log `.jsonl` ke file baru
+- Audit log kini menyimpan `kolom_idx` + `baris_excel` untuk undo presisi
+- CLI: `--konfirmasi`/`--confirm` — tanya y/n per kelompok perbaikan ambigu sebelum diterapkan
+- `scripts/benchmark.py` + `docs/benchmark.md`: recall deteksi per jenis kerusakan + akurasi perbaikan vs ground truth
+- `io`: buang baris hantu (sisa nomor urut formula) + kolom tanpa header yang isinya <10% — ditemukan dari data asli
+- Kode masalah baru: DUP001, DUP002, KSG003
+
+### Diketahui
+- Fuzzy dedupe pakai difflib (stdlib); rapidfuzz dipertimbangkan untuk file besar
+- Akurasi benchmark 72–81% — sisanya perbaikan ambigu yang sengaja ditahan (D-009)
+- D-005 (pandas vs polars) masih terbuka — core belum membutuhkannya
+
 ## [0.2.0] - 2026-11-24
 
 Validator Indonesia + aturan YAML.
