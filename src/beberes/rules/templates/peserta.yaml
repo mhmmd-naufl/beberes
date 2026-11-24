@@ -1,0 +1,15 @@
+# Template aturan: data peserta lomba/organisasi
+# Pakai: beberes bersihkan data.xlsx --aturan peserta.yaml
+versi: 1
+nama: peserta
+kolom:
+  nik:
+    tipe: nik
+  no_hp:
+    tipe: hp
+  npwp:
+    tipe: npwp
+  nama:
+    tipe: nama
+  tanggal_lahir:
+    tipe: tanggal
