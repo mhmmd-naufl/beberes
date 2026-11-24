@@ -2,6 +2,7 @@
 
 from ..io import Lembar
 from ..model import Perbaikan, Temuan
+from ..rules.fixer import perbaiki as perbaiki_rules
 from . import angka, tanggal, teks, uang
 
 _PETA = {
@@ -11,6 +12,7 @@ _PETA = {
     "NUM001": angka.perbaiki,
     "TGL001": tanggal.perbaiki,
     "TGL002": tanggal.perbaiki,
+    "HP001": perbaiki_rules,
 }
 
 

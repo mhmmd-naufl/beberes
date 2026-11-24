@@ -10,6 +10,8 @@ from beberes.i18n import atur_bahasa, t
 from beberes.io import baca_berkas, simpan
 from beberes.profiling import hitung_skor, profil_lbr
 from beberes.report import buat_baris, terapkan, tulis_audit, tulis_laporan
+from beberes.rules import muat as muat_aturan
+from beberes.rules import periksa as periksa_aturan
 
 app = typer.Typer(
     help="beberes: Tidy up messy Indonesian spreadsheets.",
@@ -41,7 +43,7 @@ def _siapkan(berkas: Path, bahasa: str | None) -> None:
         raise typer.Exit(code=3)
 
 
-def _proses(berkas: Path):
+def _proses(berkas: Path, aturan=None):
     """Baca -> profil -> deteksi -> usulkan. Kembalikan hasil per lembar."""
     try:
         lembar_list = baca_berkas(berkas)
@@ -53,9 +55,21 @@ def _proses(berkas: Path):
     for lembar in lembar_list:
         profil = profil_lbr(lembar)
         temuan = deteksi_semua(lembar, profil)
+        if aturan is not None:
+            temuan.extend(periksa_aturan(lembar, aturan))
         perbaikan = usulkan_semua(temuan, lembar)
         hasil.append((lembar, profil, temuan, perbaikan))
     return hasil
+
+
+def _muat_aturan(aturan: Path | None):
+    if aturan is None:
+        return None
+    try:
+        return muat_aturan(aturan)
+    except ValueError as e:
+        typer.echo(str(e), err=True)
+        raise typer.Exit(code=2) from e
 
 
 def _ada_yang_perlu_keputusan(hasil) -> bool:
@@ -75,10 +89,19 @@ def _cetak_ringkasan(berkas: Path, hasil, skor_sesudah=None) -> None:
         typer.echo("")
 
 
-def periksa(berkas: Path = BERKAS, bahasa: str | None = BAHASA) -> None:
+OPSI_ATURAN = typer.Option(
+    None, "--aturan", "--rules", help="File aturan YAML | Rules file"
+)
+
+
+def periksa(
+    berkas: Path = BERKAS,
+    aturan: Path | None = OPSI_ATURAN,
+    bahasa: str | None = BAHASA,
+) -> None:
     """Lihat masalah tanpa mengubah apa pun  |  Inspect only, change nothing."""
     _siapkan(berkas, bahasa)
-    hasil = _proses(berkas)
+    hasil = _proses(berkas, _muat_aturan(aturan))
     _cetak_ringkasan(berkas, hasil)
     if not any(tm for _, _, temuan, _ in hasil for tm in temuan):
         typer.echo(t("tidak_ada_temuan"))
@@ -93,11 +116,12 @@ def bersihkan(
     laporan: bool = typer.Option(
         False, "--laporan", "--report", help="Buat laporan | Write report"
     ),
+    aturan: Path | None = OPSI_ATURAN,
     bahasa: str | None = BAHASA,
 ) -> None:
     """Terapkan perbaikan ke berkas baru  |  Apply fixes to a new file."""
     _siapkan(berkas, bahasa)
-    hasil = _proses(berkas)
+    hasil = _proses(berkas, _muat_aturan(aturan))
 
     if keluar is None:
         keluar = berkas.with_stem(berkas.stem + "_bersih").with_suffix(berkas.suffix)
