@@ -93,3 +93,19 @@ def kode_wilayah_valid(kode_6_digit: str) -> bool:
 def nama_wilayah(kode: str) -> str | None:
     """Nama wilayah dari kode (mis. '32.01.01' atau segmen NIK)."""
     return _nama_per_kode().get(kode)
+
+
+@lru_cache(maxsize=1)
+def _induk_per_kecamatan() -> dict[str, str]:
+    """nama kecamatan -> nama kabupaten induk (huruf kecil)."""
+    hasil = {}
+    for w in _mentah().get("kecamatan", []):
+        induk_nama = _nama_per_kode().get(w.get("induk") or "")
+        if induk_nama:
+            hasil[w["nama"].strip().lower()] = induk_nama.strip().lower()
+    return hasil
+
+
+def induk_wilayah(nama: str) -> str | None:
+    """Nama induk (kabupaten) untuk nama kecamatan, atau None."""
+    return _induk_per_kecamatan().get(normalisasi_wilayah(nama).lower())

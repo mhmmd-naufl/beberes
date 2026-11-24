@@ -7,6 +7,8 @@ tipe-nya (docs/03). Nama kolom dicocokkan persis (case-insensitive).
 from ..io import Lembar
 from ..model import Temuan
 from ..validators import (
+    induk_wilayah,
+    normalisasi_wilayah,
     periksa_gelar,
     periksa_hp,
     periksa_nik,
@@ -38,6 +40,7 @@ PESAN = {
     "PLAT001": "Format plat nomor tidak dikenal",
     "NAMA001": "Gelar menempel di nama",
     "WIL001": "Nama wilayah tidak dikenal",
+    "WIL002": "Kecamatan tidak cocok dengan kabupaten induknya",
 }
 
 
@@ -66,6 +69,24 @@ def periksa(lembar: Lembar, aturan: Aturan) -> list[Temuan]:
                 continue
             for kode in fungsi(nilai):
                 ketemu.setdefault(kode, []).append((no_excel, nilai))
+        # WIL002: kecamatan vs kabupaten induk (kolom induk di YAML)
+        if spec.tipe == "wilayah" and spec.induk:
+            ci = _cari_kolom(lembar, spec.induk)
+            if ci is not None:
+                for baris, no_excel in zip(lembar.baris, lembar.baris_excel, strict=False):
+                    if c >= len(baris) or ci >= len(baris):
+                        continue
+                    kec = baris[c]
+                    induk_nilai = baris[ci]
+                    if kec is None or induk_nilai is None:
+                        continue
+                    induk_benar = induk_wilayah(kec)
+                    if induk_benar is None:
+                        continue  # bukan kecamatan / tak dikenal -> WIL001 saja
+                    nama_induk = normalisasi_wilayah(induk_nilai)
+                    if induk_benar != nama_induk.strip().lower():
+                        ketemu.setdefault("WIL002", []).append((no_excel, kec))
+
         for kode, sel_daftar in ketemu.items():
             pesan = PESAN.get(kode, kode)
             if kode == "WIL001":

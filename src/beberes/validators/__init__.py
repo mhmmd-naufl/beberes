@@ -3,7 +3,12 @@ from .hp import normalisasi_hp, periksa_hp
 from .nik import periksa_nik
 from .npwp import periksa_npwp
 from .plat import periksa_plat
-from .wilayah import normalisasi_wilayah, periksa_wilayah, saran_wilayah
+from .wilayah import (
+    induk_wilayah,
+    normalisasi_wilayah,
+    periksa_wilayah,
+    saran_wilayah,
+)
 
 __all__ = [
     "GELAR",
@@ -17,4 +22,7 @@ __all__ = [
     "normalisasi_wilayah",
     "periksa_wilayah",
     "saran_wilayah",
+    "induk_wilayah",
+    "kode_wilayah_valid",
+    "nama_wilayah",
 ]
