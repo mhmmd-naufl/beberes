@@ -1,4 +1,5 @@
 """CLI beberes. Perintah punya alias dua bahasa (D-006)."""
+from collections import defaultdict
 from pathlib import Path
 
 import typer
@@ -123,11 +124,18 @@ def bersihkan(
         False, "--laporan", "--report", help="Buat laporan | Write report"
     ),
     aturan: Path | None = OPSI_ATURAN,
+    konfirmasi: bool = typer.Option(
+        False, "--konfirmasi", "--confirm",
+        help="Tanya sebelum terapkan perbaikan ambigu | Ask before ambiguous fixes",
+    ),
     bahasa: str | None = BAHASA,
 ) -> None:
     """Terapkan perbaikan ke berkas baru  |  Apply fixes to a new file."""
     _siapkan(berkas, bahasa)
     hasil = _proses(berkas, _muat_aturan(aturan))
+
+    if konfirmasi:
+        _konfirmasi_perbaikan(hasil)
 
     if keluar is None:
         keluar = berkas.with_stem(berkas.stem + "_bersih").with_suffix(berkas.suffix)
@@ -167,6 +175,29 @@ def bersihkan(
         typer.echo(t("butuh_keputusan", n=n_konfirmasi))
     typer.echo(t("diterapkan", n=len(semua_perubahan), keluar=keluar))
     raise typer.Exit(code=1 if _ada_yang_perlu_keputusan(hasil) else 0)
+
+
+def _konfirmasi_perbaikan(hasil) -> None:
+    """Tanya y/n per kelompok kode untuk Perbaikan non-otomatis."""
+    grup: dict[str, list] = defaultdict(list)
+    for _, _, _, perbaikan in hasil:
+        for p in perbaikan:
+            if not p.aman_otomatis:
+                grup[p.kode].append(p)
+
+    for kode, daftar in grup.items():
+        contoh = ", ".join(
+            f"{p.nilai_lama!r}->{p.nilai_baru!r}" for p in daftar[:3]
+        )
+        setuju = typer.confirm(
+            t("konfirmasi_tanya", kode=kode, n=len(daftar), contoh=contoh)
+        )
+        if setuju:
+            for p in daftar:
+                p.aman_otomatis = True
+        else:
+            for p in daftar:
+                p.aman_otomatis = False
 
 
 def urungkan_cmd(

@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 from beberes.detectors import jalankan as deteksi_semua
 from beberes.fixers import usulkan_semua
 from beberes.io import baca_berkas
-from beberes.profiling import hitung_skor, profil_lbr
+from beberes.profiling import profil_lbr
 from beberes.report import terapkan
 
 DASAR = Path(__file__).resolve().parent.parent / "data_uji"

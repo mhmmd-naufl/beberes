@@ -15,6 +15,7 @@ PESAN = {
     "audit_tersimpan": "Audit log disimpan: {path}",
     "log_tidak_ada": "File audit log tidak ditemukan: {log}",
     "urungkan_selesai": "Perubahan di-undo -> {keluar}",
+    "konfirmasi_tanya": "Terapkan {n} perbaikan {kode}? contoh: {contoh}",
     "tidak_ada_temuan": "Tidak ada masalah ditemukan.",
     "error_baca": "Gagal membaca berkas: {detail}",
 }
