@@ -1,0 +1,27 @@
+# Template aturan: data servis/laundry (pola "Data Komang SAC")
+# Pakai: beberes bersihkan servis.xlsx --aturan servis.yaml
+versi: 1
+nama: servis
+kolom:
+  Nama Customer:
+    tipe: nama
+  "No. WhatsApp":
+    tipe: hp
+  "Tgl Masuk":
+    tipe: tanggal
+  "Tgl Selesai/Ambil":
+    tipe: tanggal
+  "Total Biaya":
+    tipe: uang
+  "Jumlah (Pasang)":
+    tipe: angka
+  "Status Pembayaran":
+    tipe: teks
+  "Status Pengerjaan":
+    tipe: teks
+  "Merk & Warna Barang":
+    tipe: teks
+  "Jenis Layanan":
+    tipe: teks
+  "Keterangan / Catatan":
+    tipe: teks

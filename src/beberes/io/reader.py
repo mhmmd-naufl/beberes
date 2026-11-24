@@ -33,6 +33,7 @@ class Lembar:
     baris: list[list] = field(default_factory=list)
     baris_excel: list[int] = field(default_factory=list)
     baris_kosong_dibuang: int = 0  # baris kosong yang dibuang dari data
+    baris_hantu_dibuang: int = 0  # baris hanya berisi nomor urut (formula sisa)
 
 
 def _sel_terisi(baris: list) -> list:
@@ -57,6 +58,28 @@ def _rapikan(baris: list[list], lebar: int) -> list[list]:
     return [list(b) + [None] * (lebar - len(b)) for b in baris]
 
 
+def _jumlah_terisi(baris: list) -> int:
+    return sum(1 for c in baris if c is not None and str(c).strip() != "")
+
+
+def _apakah_baris_hantu(baris: list, lebar_kolom: int, ada_baris_kaya: bool) -> bool:
+    """Baris sisa template: hanya kolom pertama berisi angka (nomor urut).
+
+    Syarat SEMUA harus terpenuhi supaya data asli tidak ikut terbuang:
+    - tepat 1 sel terisi, dan sel itu di kolom pertama
+    - nilainya angka (bukan teks)
+    - tabel punya >= 3 kolom dan ada baris lain yang >= 3 sel terisi
+    """
+    if not ada_baris_kaya or lebar_kolom < 3:
+        return False
+    terisi = [(i, c) for i, c in enumerate(baris)
+              if c is not None and str(c).strip() != ""]
+    if len(terisi) != 1:
+        return False
+    i, nilai = terisi[0]
+    return i == 0 and isinstance(nilai, (int, float)) and not isinstance(nilai, bool)
+
+
 def _buat_lembar(nama: str, semua_baris: list[list]) -> Lembar:
     """Ubah daftar baris mentah (dari openpyxl/csv) jadi Lembar."""
     if not semua_baris:
@@ -67,24 +90,37 @@ def _buat_lembar(nama: str, semua_baris: list[list]) -> Lembar:
     header = ["" if c is None else str(c).strip() for c in mentah_header]
 
     # Buang baris kosong di antara data; catat nomor baris Excel-nya.
-    baris_data: list[list] = []
+    mentah_data: list[list] = []
     baris_excel: list[int] = []
     dibuang = 0
     for i, baris in enumerate(semua_baris[idx_header + 1 :], start=idx_header + 2):
         if not _sel_terisi(baris):
             dibuang += 1
             continue
-        baris_data.append(baris)
+        mentah_data.append(baris)
         baris_excel.append(i)
 
-    lebar = max([len(header), *(len(b) for b in baris_data)])
+    lebar = max([len(header), *(len(b) for b in mentah_data)])
+    ada_baris_kaya = any(_jumlah_terisi(b) >= 3 for b in mentah_data)
+
+    baris_data: list[list] = []
+    excel_bersih: list[int] = []
+    hantu = 0
+    for baris, no_excel in zip(mentah_data, baris_excel, strict=False):
+        if _apakah_baris_hantu(baris, lebar, ada_baris_kaya):
+            hantu += 1
+            continue
+        baris_data.append(baris)
+        excel_bersih.append(no_excel)
+
     return Lembar(
         nama=nama,
         header=_rapikan([header], lebar)[0],
         baris_header=idx_header + 1,
         baris=_rapikan(baris_data, lebar),
-        baris_excel=baris_excel,
+        baris_excel=excel_bersih,
         baris_kosong_dibuang=dibuang,
+        baris_hantu_dibuang=hantu,
     )
 
 

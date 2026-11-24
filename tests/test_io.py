@@ -113,3 +113,34 @@ def test_format_tidak_didukung(tmp_path: Path):
     p.write_text("x")
     with pytest.raises(ValueError, match="tidak didukung"):
         baca_berkas(p)
+
+
+def test_baris_hantu_dibuang(tmp_path: Path):
+    """Baris yang hanya berisi nomor urut di kolom pertama dibuang."""
+    p = tmp_path / "hantu.xlsx"
+    _tulis_xlsx(p, [
+        ["k", "Nama", "Total"],
+        [1, "Ani", 5000],
+        [2, "Budi", 7000],
+        [3, None, None],   # hantu: cuma nomor urut
+        [4, None, None],   # hantu
+        [5, "Citra", 9000],
+    ])
+    (lembar,) = baca_berkas(p)
+    assert len(lembar.baris) == 3
+    assert lembar.baris_hantu_dibuang == 2
+    assert lembar.baris_excel == [2, 3, 6]
+
+
+def test_baris_satu_sel_bukan_hantu(tmp_path: Path):
+    """Baris 1 sel terisi tapi di kolom bukan pertama TIDAK dibuang."""
+    p = tmp_path / "satu.xlsx"
+    _tulis_xlsx(p, [
+        ["Nama", "Total", "Kota"],
+        ["Ani", 5000, "Bandung"],
+        ["Budi", 7000, "Medan"],
+        [None, None, "Solo"],   # cuma kota terisi -> data asli, jangan hapus
+    ])
+    (lembar,) = baca_berkas(p)
+    assert len(lembar.baris) == 3
+    assert lembar.baris_hantu_dibuang == 0
