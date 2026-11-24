@@ -2,6 +2,23 @@
 
 Mengikuti [Keep a Changelog](https://keepachangelog.com/) dan [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] - 2026-11-24
+
+Polish: data wilayah resmi + GIF demo + .xls.
+
+### Ditambahkan
+- Data wilayah resmi: 38 provinsi + 514 kab/kota + 7.265 kecamatan sesuai Kepmendagri 300.2.2-2138/2025 (sumber cahyadsn/wilayah, MIT)
+- NIK002 kini cek kode prov+kab+kec ke data wilayah resmi
+- WIL002: kecamatan vs kabupaten induk (via `induk:` di YAML)
+- Reader dukung `.xls` lama via `xlrd`
+- `docs/demo.gif` + `scripts/buat_gif_demo.py` (GIF demo reproducible)
+- CI workflow: pytest + ruff tiap push/PR
+- Fixer NAMA001: pisah gelar dari nama (konfirmasi)
+
+### Diketahui
+- Level desa/kelurahan (83rb) belum dibundel — diputuskan opsional/backlog
+- Writer tetap hanya `.xlsx`/`.csv` (input `.xls` -> output `.xlsx`)
+
 ## [0.3.0] - 2026-11-24
 
 Dedupe + audit undo + mode konfirmasi + benchmark.
