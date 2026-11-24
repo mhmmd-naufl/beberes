@@ -2,11 +2,19 @@
 
 Mengikuti [Keep a Changelog](https://keepachangelog.com/) dan [Semantic Versioning](https://semver.org/).
 
-## [Belum dirilis]
+## [0.3.2] - 2026-11-24
+
+Audit QA + validator tambahan.
 
 ### Ditambahkan
 - `email` validator (EMAIL001) + `kategori` check via `aturan: [...]` (KAT001)
 - WIL001 kini punya perbaikan konfirmasi (saran typo wilayah -> `--konfirmasi`)
+
+### Diperbaiki
+- `urungkan`: audit kini menyimpan `baris_output` — undo akurat walau baris kosong/hantu dibuang reader
+- `urungkan`: fallback 1-sheet untuk CSV (nama sheet = nama file, bisa beda)
+- `wilayah`: nama resmi dinormalisasi (`"Kabupaten Bogor"` cocok input `"Bogor"`)
+- `dedupe`: fuzzy skip nilai non-alfabet (kolom tanggal tidak lagi false positive)
 
 ## [0.3.1] - 2026-11-24
 
