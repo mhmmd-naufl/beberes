@@ -7,6 +7,8 @@
 
 **Status:** v0.3.0 — dedupe, undo, mode konfirmasi, benchmark akurasi
 
+![demo](docs/demo.gif)
+
 *"Beberes"* is Indonesian for "tidying up". It does that to your data.
 
 ## The problem

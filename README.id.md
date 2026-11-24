@@ -7,6 +7,8 @@
 
 **Status:** v0.3.0 — dedupe, undo, mode konfirmasi, benchmark akurasi
 
+![demo](docs/demo.gif)
+
 ## Masalahnya
 
 Data dari kantor desa, sekolah, panitia kegiatan, dan UMKM hampir selalu berantakan:
