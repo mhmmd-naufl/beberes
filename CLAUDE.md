@@ -46,6 +46,27 @@ beberes --help               # coba CLI
 - Commit kecil dengan pesan jelas (mis. `feat(detectors): deteksi format tanggal campur (TGL001)`).
 
 ## Status saat ini
-Pra-v0.1. Sudah ada: kerangka paket, CLI stub dengan alias dua bahasa, modul i18n, smoke test.
-Belum ada: reader/writer, profiler, detector, fixer, validator, rule engine, laporan, audit log.
-Langkah berikutnya yang disarankan: `scripts/buat_data_berantakan.py` (generator data sintetis + ground truth).
+Rilis terakhir: **v0.3.2** (tag pushed, trusted publishing -> PyPI).
+Versi PyPI: 0.0.1 s/d 0.3.2. 107 test hijau, ruff bersih.
+
+Sudah ada (semua di `src/beberes/`):
+- `io/` reader .xlsx/.xlsm/.xls/.csv (baris+kolom hantu dibuang), writer .xlsx/.csv
+- `profiling/` inferensi tipe + skor kualitas
+- `detectors/` FMT/UANG/NUM/TGL/KSG + `dedupe/` DUP001/002 (fuzzy difflib, tidak auto-hapus)
+- `fixers/` perbaikan aman otomatis; ambigu -> `aman_otomatis=False`
+- `validators/` NIK, HP, NPWP, plat, gelar, wilayah (data resmi Kepmendagri 2025, MIT), email
+- `rules/` engine YAML + template (peserta/kas/penjualan/servis); tipe: teks/nama/angka/uang/tanggal/hp/nik/npwp/plat/wilayah/kategori/email; field `induk:` untuk WIL002
+- `report/` ringkasan, laporan md, audit .jsonl (ada `baris_output` untuk undo akurat)
+- `cli/` periksa/check, bersihkan/clean, urungkan/undo, versi/version, `--konfirmasi`, `--aturan`, `--keluar`, `--laporan`, `--bahasa`
+- `scripts/` buat_data_berantakan.py (generator+ground truth), benchmark.py, buat_gif_demo.py
+- CI: pytest+ruff tiap push; release.yml auto-publish PyPI via trusted publishing (tag v*)
+
+Keputusan yang ditunda:
+- D-005 pandas vs polars — core masih pure Python, belum butuh
+- Level desa/kelurahan wilayah (83rb) — backlog, file terlalu besar untuk bundle
+- Partial undo by kode/sel — spek "nanti"
+- TGL002 agak noisy untuk tanggal dd/mm/yyyy kanonik (diketahui, bukan bug)
+
+Data asli di `data_asli/` (gitignored): Komang SAC (servis), BANUA 2025 (multi-sheet+formula), Data_Nasabah (kontrol bersih). Jangan commit/share — BANUA punya string mirip API token, sarankan user regenerate.
+
+Next kandidat: v0.5 UI lokal (FastAPI+React), atau polish kecil (partial undo, TGL002 noise).
