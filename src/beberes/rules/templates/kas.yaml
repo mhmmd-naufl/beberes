@@ -1,0 +1,11 @@
+# Template aturan: data kas/iuran
+# Pakai: beberes bersihkan kas.xlsx --aturan kas.yaml
+versi: 1
+nama: kas
+kolom:
+  tanggal:
+    tipe: tanggal
+  uang:
+    tipe: uang
+  keterangan:
+    tipe: teks

@@ -2,11 +2,14 @@ import pytest
 
 from beberes.validators import (
     normalisasi_hp,
+    normalisasi_wilayah,
     periksa_gelar,
     periksa_hp,
     periksa_nik,
     periksa_npwp,
     periksa_plat,
+    periksa_wilayah,
+    saran_wilayah,
 )
 
 # --- NIK -------------------------------------------------------------------
@@ -94,3 +97,29 @@ def test_periksa_plat(nilai, kode):
 ])
 def test_periksa_gelar(nilai, kode):
     assert periksa_gelar(nilai) == kode
+
+
+# --- Wilayah ---------------------------------------------------------------
+
+def test_normalisasi_wilayah():
+    assert normalisasi_wilayah("kota bandung") == "Bandung"
+    assert normalisasi_wilayah("  Kab. Malang  ") == "Malang"
+    assert normalisasi_wilayah("jawa barat") == "Jawa Barat"
+
+
+@pytest.mark.parametrize("nilai,kode", [
+    ("Bandung", []),
+    ("Kota Bandung", []),
+    ("Jawa Barat", []),
+    ("B.wangi", ["WIL001"]),
+    ("Atlantis", ["WIL001"]),
+    (None, []),
+])
+def test_periksa_wilayah(nilai, kode):
+    assert periksa_wilayah(nilai) == kode
+
+
+def test_saran_wilayah():
+    assert saran_wilayah("Banyuwamgi") == "Banyuwangi"
+    assert saran_wilayah("Bandung") == "Bandung"
+    assert saran_wilayah("zzzz") is None

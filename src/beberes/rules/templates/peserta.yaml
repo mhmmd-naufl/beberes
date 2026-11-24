@@ -1,15 +1,16 @@
 # Template aturan: data peserta lomba/organisasi
 # Pakai: beberes bersihkan data.xlsx --aturan peserta.yaml
+# Nama kunci = nama kolom di file (pencocokan tidak case-sensitive).
 versi: 1
 nama: peserta
 kolom:
-  nik:
-    tipe: nik
-  no_hp:
-    tipe: hp
-  npwp:
-    tipe: npwp
-  nama:
+  Nama:
     tipe: nama
-  tanggal_lahir:
+  "No HP":
+    tipe: hp
+  Wilayah:
+    tipe: wilayah
+  Tanggal Lahir:
     tipe: tanggal
+  Pekerjaan:
+    tipe: teks

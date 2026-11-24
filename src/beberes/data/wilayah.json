@@ -1,0 +1,21 @@
+{
+  "_catatan": "Subset awal untuk validator wilayah. Provinsi: daftar resmi 34 (fakta publik). Kota: nama yang dipakai dataset sintetis. TODO: ganti dengan data wilayah resmi lengkap dari bps.go.id/data.go.id setelah lisensi diverifikasi (docs/04 bagian C).",
+  "provinsi": [
+    "Aceh", "Sumatera Utara", "Sumatera Barat", "Riau", "Kepulauan Riau",
+    "Jambi", "Sumatera Selatan", "Kepulauan Bangka Belitung", "Bengkulu",
+    "Lampung", "DKI Jakarta", "Jawa Barat", "Jawa Tengah", "DI Yogyakarta",
+    "Jawa Timur", "Banten", "Bali", "Nusa Tenggara Barat", "Nusa Tenggara Timur",
+    "Kalimantan Barat", "Kalimantan Tengah", "Kalimantan Selatan",
+    "Kalimantan Timur", "Kalimantan Utara", "Sulawesi Utara", "Sulawesi Tengah",
+    "Sulawesi Selatan", "Sulawesi Tenggara", "Gorontalo", "Sulawesi Barat",
+    "Maluku", "Maluku Utara", "Papua", "Papua Barat Daya", "Papua Tengah",
+    "Papua Pegunungan", "Papua Selatan"
+  ],
+  "kota": [
+    "Jakarta", "Bandung", "Surabaya", "Yogyakarta", "Semarang", "Medan",
+    "Makassar", "Denpasar", "Palembang", "Balikpapan", "Banyuwangi", "Malang",
+    "Bogor", "Bekasi", "Depok", "Tangerang", "Padang", "Manado", "Pontianak",
+    "Samarinda", "Kediri", "Jember", "Probolinggo", "Lumajang", "Bondowoso",
+    "Situbondo"
+  ]
+}

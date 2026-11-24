@@ -1,0 +1,15 @@
+# Template aturan: data penjualan
+# Pakai: beberes bersihkan penjualan.xlsx --aturan penjualan.yaml
+versi: 1
+nama: penjualan
+kolom:
+  tanggal:
+    tipe: tanggal
+  harga:
+    tipe: uang
+  qty:
+    tipe: angka
+  satuan:
+    tipe: kategori
+  keterangan:
+    tipe: teks

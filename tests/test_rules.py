@@ -1,5 +1,5 @@
 from beberes.io import Lembar
-from beberes.rules import muat, periksa, perbaiki
+from beberes.rules import muat, perbaiki, periksa
 from beberes.rules.skema import validasi
 
 
@@ -45,6 +45,6 @@ def test_yaml_salah_tipe_ditolak(tmp_path):
     p.write_text("kolom:\n  x:\n    tipe: hantu\n", encoding="utf-8")
     try:
         muat(p)
-        assert False, "harus error"
+        raise AssertionError("harus error")
     except ValueError as e:
         assert "hantu" in str(e)

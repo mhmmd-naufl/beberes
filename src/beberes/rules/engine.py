@@ -12,6 +12,8 @@ from ..validators import (
     periksa_nik,
     periksa_npwp,
     periksa_plat,
+    periksa_wilayah,
+    saran_wilayah,
 )
 from .skema import Aturan
 
@@ -23,6 +25,7 @@ VALIDATOR = {
     "npwp": periksa_npwp,
     "plat": periksa_plat,
     "nama": periksa_gelar,
+    "wilayah": periksa_wilayah,
 }
 
 PESAN = {
@@ -34,6 +37,7 @@ PESAN = {
     "NPWP001": "Format NPWP tidak valid",
     "PLAT001": "Format plat nomor tidak dikenal",
     "NAMA001": "Gelar menempel di nama",
+    "WIL001": "Nama wilayah tidak dikenal",
 }
 
 
@@ -63,9 +67,14 @@ def periksa(lembar: Lembar, aturan: Aturan) -> list[Temuan]:
             for kode in fungsi(nilai):
                 ketemu.setdefault(kode, []).append((no_excel, nilai))
         for kode, sel_daftar in ketemu.items():
+            pesan = PESAN.get(kode, kode)
+            if kode == "WIL001":
+                saran = saran_wilayah(sel_daftar[0][1])
+                if saran:
+                    pesan = f"{pesan} (saran: {saran})"
             hasil.append(Temuan(
                 kode=kode, kolom=nama_kolom, tingkat="peringatan",
-                pesan=PESAN.get(kode, kode),
+                pesan=pesan,
                 baris=[n for n, _ in sel_daftar],
                 contoh=[str(v) for _, v in sel_daftar[:3]],
                 sel=[{"baris_excel": n, "kolom_idx": c, "nilai": v}
