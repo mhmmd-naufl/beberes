@@ -132,6 +132,45 @@ def test_baris_hantu_dibuang(tmp_path: Path):
     assert lembar.baris_excel == [2, 3, 6]
 
 
+def test_kolom_hantu_tanpa_header_dibuang(tmp_path: Path):
+    """Kolom tanpa nama header + isinya <10% baris dibuang."""
+    p = tmp_path / "kolom.xlsx"
+    _tulis_xlsx(p, [
+        ["Nama", "Total", None, None],
+        ["Ani", 5000, None, None],
+        ["Budi", 7000, None, None],
+        ["Citra", 9000, None, None],
+        ["Dedi", 1000, None, None],
+        ["Eko", 2000, None, None],
+        ["Fajar", 3000, None, None],
+        ["Gita", 4000, None, None],
+        ["Hadi", 5000, None, None],
+        ["Ika", 6000, None, None],
+        ["Joko", 7000, None, None],
+        ["Kiki", 8000, None, None],
+        ["Lala", 9000, None, None],
+        ["Maman", 10000, "TOTAL", None],
+    ])
+    (lembar,) = baca_berkas(p)
+    assert lembar.header == ["Nama", "Total"]
+    assert all(len(b) == 2 for b in lembar.baris)
+
+
+def test_kolom_tanpa_header_berisi_banyak_tidak_dibuang(tmp_path: Path):
+    """Kolom tanpa header tapi banyak isinya TIDAK dibuang (data asli)."""
+    p = tmp_path / "kolom2.xlsx"
+    _tulis_xlsx(p, [
+        ["Nama", "Total", None],
+        ["Ani", 5000, "catatan1"],
+        ["Budi", 7000, "catatan2"],
+        ["Citra", 9000, "catatan3"],
+        ["Dedi", 1000, "catatan4"],
+        ["Eko", 2000, "catatan5"],
+    ])
+    (lembar,) = baca_berkas(p)
+    assert len(lembar.header) == 3
+
+
 def test_baris_satu_sel_bukan_hantu(tmp_path: Path):
     """Baris 1 sel terisi tapi di kolom bukan pertama TIDAK dibuang."""
     p = tmp_path / "satu.xlsx"

@@ -80,6 +80,36 @@ def _apakah_baris_hantu(baris: list, lebar_kolom: int, ada_baris_kaya: bool) -> 
     return i == 0 and isinstance(nilai, (int, float)) and not isinstance(nilai, bool)
 
 
+def _buang_kolom_hantu(header: list[str], baris: list[list]) -> tuple[list[str], list[list]]:
+    """Buang kolom tanpa nama header yang isinya nyaris kosong.
+
+    Pola: kolom kelebihan di kanan/ tengah tabel yang headernya kosong
+    dan hanya berisi sisa tulisan (TOTAL, =SUM, catatan pinggir) —
+    bukan data kolom sungguhan. Syarat: header kosong DAN terisi
+    < 10% baris. Kolom bernama tidak pernah dibuang.
+    """
+    if not baris:
+        return header, baris
+    buang = set()
+    for c, nama in enumerate(header):
+        if nama:  # header None/"" = kolom tanpa nama
+            continue
+        terisi = sum(
+            1 for b in baris
+            if c < len(b) and b[c] is not None and str(b[c]).strip() != ""
+        )
+        # terisi < 10% baris (untuk tabel kecil, kolom 1 terisi tidak dibuang)
+        if terisi * 10 < len(baris):
+            buang.add(c)
+    if not buang or len(buang) >= len(header):
+        return header, baris
+    header_baru = [h for c, h in enumerate(header) if c not in buang]
+    baris_baru = [
+        [c for i, c in enumerate(b) if i not in buang] for b in baris
+    ]
+    return header_baru, baris_baru
+
+
 def _buat_lembar(nama: str, semua_baris: list[list]) -> Lembar:
     """Ubah daftar baris mentah (dari openpyxl/csv) jadi Lembar."""
     if not semua_baris:
@@ -112,6 +142,12 @@ def _buat_lembar(nama: str, semua_baris: list[list]) -> Lembar:
             continue
         baris_data.append(baris)
         excel_bersih.append(no_excel)
+
+    # Samakan header ke lebar data dulu — kolom hantu bisa ada di luar
+    # nama header (baris lebih panjang dari header).
+    header = _rapikan([header], lebar)[0]
+    header, baris_data = _buang_kolom_hantu(header, baris_data)
+    lebar = max([len(header), *(len(b) for b in baris_data)]) if baris_data else len(header)
 
     return Lembar(
         nama=nama,
