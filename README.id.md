@@ -5,7 +5,7 @@
 
 🇬🇧 [English version](README.md)
 
-**Status:** v0.3.0 — dedupe, undo, mode konfirmasi, benchmark akurasi
+**Status:** v0.3.2 — dedupe, undo, mode konfirmasi, benchmark akurasi, wilayah resmi
 
 ![demo](docs/demo.gif)
 
@@ -62,7 +62,9 @@ beberes ui
 | [docs/04-rencana-data-uji.md](docs/04-rencana-data-uji.md) | Sumber data, generator data sintetis, metrik, aturan privasi |
 | [docs/05-validasi-user.md](docs/05-validasi-user.md) | Cara cari user, pertanyaan wawancara, log umpan balik |
 | [docs/06-keputusan-dan-risiko.md](docs/06-keputusan-dan-risiko.md) | Log keputusan desain + daftar risiko |
-| [docs/07-panduan-vibecoding.md](docs/07-panduan-vibecoding.md) | Panduan kerja dengan AI (vibecoding) |
+| [docs/07-aturan-yaml.md](docs/07-aturan-yaml.md) | Cara menulis aturan YAML sendiri (tipe kolom, kode masalah, contoh) |
+| [docs/benchmark.md](docs/benchmark.md) | Benchmark akurasi pada data sintetis (recall + akurasi perbaikan) |
+| [docs/demo-gif.md](docs/demo-gif.md) | Skenario demo untuk GIF |
 | [CLAUDE.md](CLAUDE.md) | File konteks untuk asisten AI coding |
 | [ROADMAP.md](ROADMAP.md) | Versi dan checklist per versi (tanpa tanggal) |
 | [CHANGELOG.md](CHANGELOG.md) | Riwayat perubahan |

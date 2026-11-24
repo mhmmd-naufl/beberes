@@ -5,7 +5,7 @@
 
 🇮🇩 [Versi Bahasa Indonesia](README.id.md)
 
-**Status:** v0.3.0 — dedupe, undo, mode konfirmasi, benchmark akurasi
+**Status:** v0.3.2 — dedupe, undo, mode konfirmasi, benchmark akurasi, wilayah resmi
 
 ![demo](docs/demo.gif)
 
@@ -26,7 +26,7 @@ read file -> profile columns -> detect issues -> propose fixes -> apply -> repor
 
 Everything runs **locally**. No data leaves your computer.
 
-## Planned usage
+## Usage
 
 ```bash
 pip install beberes
@@ -74,7 +74,9 @@ Detailed docs are currently written in Indonesian (English summaries come with v
 | [docs/04-rencana-data-uji.md](docs/04-rencana-data-uji.md) | Test data sources, synthetic generator, metrics, privacy rules |
 | [docs/05-validasi-user.md](docs/05-validasi-user.md) | Finding users, interview questions, feedback log |
 | [docs/06-keputusan-dan-risiko.md](docs/06-keputusan-dan-risiko.md) | Design decision log + risks |
-| [docs/07-panduan-vibecoding.md](docs/07-panduan-vibecoding.md) | AI-assisted (vibecoding) workflow guide |
+| [docs/07-aturan-yaml.md](docs/07-aturan-yaml.md) | Writing your own YAML rules (column types, codes, examples) |
+| [docs/benchmark.md](docs/benchmark.md) | Accuracy benchmark on synthetic data (recall + fix accuracy) |
+| [docs/demo-gif.md](docs/demo-gif.md) | Demo scenario script for the GIF |
 | [CLAUDE.md](CLAUDE.md) | Context file for AI coding assistants |
 | [ROADMAP.md](ROADMAP.md) | Versions and checklists (no dates) |
 | [CHANGELOG.md](CHANGELOG.md) | Change history |
