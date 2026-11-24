@@ -62,6 +62,7 @@ Cerita demo: "admin non-teknis rapikan data lewat browser, tanpa terminal".
 - [x] Upload, tampilan temuan per sheet, skor kualitas
 - [x] Unduh hasil + audit log (semua fix aman otomatis diterapkan)
 - [x] Centang perbaikan individual / mode konfirmasi di UI
+- [x] Before/after diff (tabel perubahan sebelum→sesudah setelah bersihkan)
 - [ ] Tes dengan 2-3 user nyata, catat di dokumen 05
 
 ## v1.0: Ekosistem

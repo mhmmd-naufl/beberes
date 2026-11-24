@@ -131,10 +131,14 @@ async function bersihkan() {
   try {
     const r = await kirim("/api/bersihkan", { terpilih: JSON.stringify([...pilihan]) });
     const data = await r.json();
-    const a = document.createElement("a");
-    a.href = data.unduh; a.textContent = `Unduh ${data.unduh.split("/").pop()}`;
+    const diffRows = (data.diff || []).slice(0, 300).map(p => `
+      <tr><td>${esc(p.sheet)}</td><td>${esc(p.sel)}</td><td>${esc(p.kode)}</td>
+      <td class="lama">${esc(p.nilai_lama)}</td><td class="baru">${esc(p.nilai_baru)}</td></tr>`).join("");
     $("hasil").insertAdjacentHTML("beforeend",
-      `<div class="kartu">✓ ${data.perubahan} perubahan diterapkan — <a href="${data.unduh}">unduh file bersih</a><br>
+      `<div class="kartu">✓ ${data.perubahan} perubahan diterapkan — <a href="${data.unduh}">unduh file bersih</a>
+       ${data.perubahan ? `<details open><summary>Diff sebelum → sesudah</summary>
+       <table><tr><th>Sheet</th><th>Sel</th><th>Kode</th><th>Sebelum</th><th>Sesudah</th></tr>${diffRows}</table>
+       ${(data.diff || []).length > 300 ? `<p class="muted">+${data.diff.length - 300} perubahan lain tidak ditampilkan.</p>` : ""}</details>` : ""}
        <details><summary>audit log (${data.perubahan} baris)</summary><pre class="muted">${esc(data.audit.slice(0,4000))}</pre></details></div>`);
   } catch (e) { $("hasil").innerHTML += `<p class="error">${esc(e.message)}</p>`; }
   $("btnBersih").disabled = false;

@@ -164,6 +164,15 @@ def buat_app() -> FastAPI:
                 "unduh": f"/unduh/{nama_keluar}",
                 "audit": audit,
                 "perubahan": len(semua_perubahan),
+                "diff": [
+                    {
+                        "sheet": p["sheet"], "sel": p["sel"],
+                        "kolom": p["kolom"], "kode": p["kode"],
+                        "nilai_lama": str(p["nilai_lama"]),
+                        "nilai_baru": str(p["nilai_baru"]),
+                    }
+                    for p in semua_perubahan
+                ],
             }
         except Exception as e:
             raise HTTPException(400, f"Gagal membersihkan: {e}") from e

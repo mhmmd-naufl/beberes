@@ -53,8 +53,8 @@ v0.5 UI (sedang berjalan):
 - `beberes ui` -> FastAPI + halaman `src/beberes/ui/index.html` (vanilla JS, React via CDN menyusul)
 - Endpoint: GET /, POST /api/periksa, POST /api/bersihkan, GET /unduh/{file}
 - Deps baru: fastapi, uvicorn, python-multipart; dev: httpx2 (wajib untuk TestClient)
-- Selesai: upload->periksa->bersihkan->unduh+audit; centang perbaikan individual + mode konfirmasi di UI (`terpilih` JSON indeks, deterministik; fix konfirmasi tidak auto-centang); test_ui.py generate fixture sendiri (data_uji TIDAK ikut repo — gitignored!)
-- Belum: before/after diff, tes user nyata (docs/05)
+- Selesai: upload->periksa->bersihkan->unduh+audit; centang perbaikan individual + mode konfirmasi di UI (`terpilih` JSON indeks, deterministik; fix konfirmasi tidak auto-centang); diff sebelum→sesudah dirender di UI; test_ui.py generate fixture sendiri (data_uji TIDAK ikut repo — gitignored!)
+- Belum: tes user nyata (docs/05) — item checklist v0.5 tersisa ini saja
 - Catatan perf: dedupe fuzzy sudah dioptimasi (blokir huruf+bucket panjang, maks grup 200) — BANUA 15 sheet ~20rb baris butuh ~1 menit untuk periksa; UI render maks 500 baris perbaikan/sheet (sisanya ikut default)
 - Server dev: `beberes ui --port 8000`
 

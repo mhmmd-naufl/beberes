@@ -54,6 +54,7 @@ def test_bersihkan_dan_unduh(client):
     assert r.status_code == 200
     data = r.json()
     assert data["perubahan"] > 0
+    assert data["diff"] and data["diff"][0]["nilai_lama"] != data["diff"][0]["nilai_baru"]
     r2 = c.get(data["unduh"])
     assert r2.status_code == 200
     assert r2.content[:2] == b"PK"  # file xlsx = zip
