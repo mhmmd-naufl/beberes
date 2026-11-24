@@ -16,6 +16,7 @@ PESAN = {
     "log_tidak_ada": "Audit log file not found: {log}",
     "urungkan_selesai": "Changes undone -> {keluar}",
     "konfirmasi_tanya": "Apply {n} fixes {kode}? e.g. {contoh}",
+    "ui_mulai": "beberes UI at {url} — press Ctrl+C to stop",
     "tidak_ada_temuan": "No problems found.",
     "error_baca": "Failed to read file: {detail}",
 }

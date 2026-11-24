@@ -226,6 +226,15 @@ def urungkan_cmd(
     typer.echo(t("urungkan_selesai", keluar=keluar))
 
 
+def ui(port: int = typer.Option(8000, "--port", help="Port server | Server port")) -> None:
+    """Buka UI lokal di browser  |  Open local UI in browser."""
+    import uvicorn
+
+    from beberes.ui.app import buat_app
+    typer.echo(t("ui_mulai", url=f"http://localhost:{port}"))
+    uvicorn.run(buat_app(), host="127.0.0.1", port=port)
+
+
 def versi(bahasa: str | None = BAHASA) -> None:
     """Tampilkan versi  |  Show version."""
     atur_bahasa(bahasa)
@@ -239,6 +248,7 @@ app.command("bersihkan")(bersihkan)
 app.command("clean")(bersihkan)
 app.command("urungkan")(urungkan_cmd)
 app.command("undo")(urungkan_cmd)
+app.command("ui")(ui)
 app.command("versi")(versi)
 app.command("version")(versi)
 

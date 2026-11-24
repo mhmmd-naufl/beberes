@@ -58,9 +58,10 @@ Cerita demo: "14 pasangan nama mirip ditemukan, dicek, dan digabung dengan aman"
 
 Cerita demo: "admin non-teknis rapikan data lewat browser, tanpa terminal".
 
-- [ ] `beberes ui`: FastAPI + React di localhost
-- [ ] Upload, tampilan before/after, centang perbaikan yang diterapkan
-- [ ] Unduh hasil + laporan
+- [x] `beberes ui`: FastAPI + React di localhost (React via CDN, Vite menyusul)
+- [x] Upload, tampilan temuan per sheet, skor kualitas
+- [x] Unduh hasil + audit log (semua fix aman otomatis diterapkan)
+- [ ] Centang perbaikan individual / mode konfirmasi di UI
 - [ ] Tes dengan 2-3 user nyata, catat di dokumen 05
 
 ## v1.0: Ekosistem

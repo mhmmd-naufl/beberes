@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>beberes — rapikan spreadsheet</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; color: #1c2430; }
+  h1 { font-size: 1.6rem; }
+  .kartu { border: 1px solid #d5dbe3; border-radius: 10px; padding: 1rem; margin: 1rem 0; }
+  table { border-collapse: collapse; width: 100%; font-size: .85rem; }
+  th, td { border: 1px solid #e2e8f0; padding: .3rem .5rem; text-align: left; }
+  th { background: #f1f5f9; }
+  .error { color: #b91c1c; } .peringatan { color: #b45309; } .info { color: #1d4ed8; }
+  button { background: #0f766e; color: #fff; border: 0; border-radius: 8px; padding: .6rem 1.2rem; font-size: 1rem; cursor: pointer; }
+  button:disabled { opacity: .5; }
+  textarea { width: 100%; font-family: monospace; font-size: .8rem; }
+  .muted { color: #64748b; font-size: .85rem; }
+</style>
+</head>
+<body>
+<h1>🧹 beberes</h1>
+<p class="muted">Periksa file Excel/CSV berantakan — tidak mengubah apa pun sampai kamu pilih bersihkan.</p>
+
+<div class="kartu">
+  <input type="file" id="file" accept=".xlsx,.xlsm,.xls,.csv">
+  <p class="muted">Aturan YAML opsional (kosongkan untuk pemeriksaan umum):</p>
+  <textarea id="aturan" rows="4" placeholder="versi: 1&#10;kolom:&#10;  No HP:&#10;    tipe: hp"></textarea>
+  <p>
+    <button onclick="periksa()">Periksa</button>
+    <button onclick="bersihkan()" id="btnBersih" disabled>Bersihkan → unduh</button>
+  </p>
+</div>
+
+<div id="hasil"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+let fileTerakhir = null;
+
+async function kirim(endpoint) {
+  const fd = new FormData();
+  fd.append("file", $("file").files[0]);
+  const at = $("aturan").value.trim();
+  if (at) fd.append("aturan", at);
+  const r = await fetch(endpoint, { method: "POST", body: fd });
+  if (!r.ok) throw new Error(await r.text());
+  return r;
+}
+
+function renderTemuan(lembar) {
+  return lembar.map(l => `
+    <div class="kartu">
+      <b>Sheet '${l.sheet}'</b> — ${l.baris} baris, ${l.kolom} kolom —
+      skor ${l.skor} — ${l.temuan.length} temuan, ${l.perbaikan} perbaikan (${l.konfirmasi} butuh konfirmasi)
+      ${l.temuan.length ? `<table><tr><th>Kode</th><th>Kolom</th><th>Tingkat</th><th>Pesan</th><th>Contoh</th></tr>` +
+        l.temuan.map(t => `<tr class="${t.tingkat}"><td>${t.kode}</td><td>${t.kolom}</td><td>${t.tingkat}</td><td>${t.pesan}</td><td>${(t.contoh||[]).join("; ")}</td></tr>`).join("") + `</table>` : "<p>✓ tidak ada masalah</p>"}
+    </div>`).join("");
+}
+
+async function periksa() {
+  $("hasil").innerHTML = "memeriksa…";
+  $("btnBersih").disabled = true;
+  try {
+    const r = await kirim("/api/periksa");
+    const data = await r.json();
+    fileTerakhir = true;
+    $("btnBersih").disabled = false;
+    $("hasil").innerHTML = renderTemuan(data.lembar);
+  } catch (e) { $("hasil").innerHTML = `<p class="error">${e.message}</p>`; }
+}
+
+async function bersihkan() {
+  $("btnBersih").disabled = true;
+  $("hasil").innerHTML += "<p>membersihkan…</p>";
+  try {
+    const r = await kirim("/api/bersihkan");
+    const data = await r.json();
+    const a = document.createElement("a");
+    a.href = data.unduh; a.textContent = `Unduh ${data.unduh.split("/").pop()}`;
+    $("hasil").insertAdjacentHTML("beforeend",
+      `<div class="kartu">✓ ${data.perubahan} perubahan diterapkan — <a href="${data.unduh}">unduh file bersih</a><br>
+       <details><summary>audit log (${data.perubahan} baris)</summary><pre class="muted">${data.audit.slice(0,4000)}</pre></details></div>`);
+  } catch (e) { $("hasil").innerHTML += `<p class="error">${e.message}</p>`; }
+  $("btnBersih").disabled = false;
+}
+</script>
+</body>
+</html>

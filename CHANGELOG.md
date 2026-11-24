@@ -2,6 +2,12 @@
 
 Mengikuti [Keep a Changelog](https://keepachangelog.com/) dan [Semantic Versioning](https://semver.org/).
 
+## [Belum dirilis]
+
+### Ditambahkan
+- `beberes ui`: UI lokal FastAPI + React — upload -> periksa -> bersihkan -> unduh + audit
+- Dependency baru: fastapi, uvicorn, python-multipart (untuk UI lokal v0.5)
+
 ## [0.3.2] - 2026-11-24
 
 Audit QA + validator tambahan.

@@ -26,6 +26,9 @@ dependencies = [
   "pyyaml>=6.0",
   "pydantic>=2.0",
   "xlrd>=2.0",  # format .xls lama (xlrd 2.x hanya baca .xls)
+  "fastapi>=0.110",  # UI lokal v0.5 (roadmap)
+  "uvicorn>=0.29",   # server ASGI untuk `beberes ui`
+  "python-multipart>=0.0.9",  # upload file di endpoint FastAPI
 ]
 
 [project.optional-dependencies]
