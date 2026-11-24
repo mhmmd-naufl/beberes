@@ -9,7 +9,13 @@ from beberes.fixers import usulkan_semua
 from beberes.i18n import atur_bahasa, t
 from beberes.io import baca_berkas, simpan
 from beberes.profiling import hitung_skor, profil_lbr
-from beberes.report import buat_baris, terapkan, tulis_audit, tulis_laporan
+from beberes.report import (
+    buat_baris,
+    terapkan,
+    tulis_audit,
+    tulis_laporan,
+    urungkan,
+)
 from beberes.rules import muat as muat_aturan
 from beberes.rules import periksa as periksa_aturan
 
@@ -163,6 +169,32 @@ def bersihkan(
     raise typer.Exit(code=1 if _ada_yang_perlu_keputusan(hasil) else 0)
 
 
+def urungkan_cmd(
+    berkas: Path = BERKAS,
+    log: Path = typer.Option(
+        ..., "--log", help="File audit .jsonl | Audit log file"
+    ),
+    keluar: Path | None = typer.Option(
+        None, "--keluar", "--out", help="Berkas keluaran | Output file"
+    ),
+    bahasa: str | None = BAHASA,
+) -> None:
+    """Kembalikan perubahan dari audit log  |  Undo changes from audit log."""
+    _siapkan(berkas, bahasa)
+    if not log.exists():
+        typer.echo(t("log_tidak_ada", log=log), err=True)
+        raise typer.Exit(code=3)
+    try:
+        lembar_list = urungkan(berkas, log)
+    except ValueError as e:
+        typer.echo(str(e), err=True)
+        raise typer.Exit(code=3) from e
+    if keluar is None:
+        keluar = berkas.with_stem(berkas.stem + "_undo").with_suffix(berkas.suffix)
+    simpan(lembar_list, keluar)
+    typer.echo(t("urungkan_selesai", keluar=keluar))
+
+
 def versi(bahasa: str | None = BAHASA) -> None:
     """Tampilkan versi  |  Show version."""
     atur_bahasa(bahasa)
@@ -174,6 +206,8 @@ app.command("periksa")(periksa)
 app.command("check")(periksa)
 app.command("bersihkan")(bersihkan)
 app.command("clean")(bersihkan)
+app.command("urungkan")(urungkan_cmd)
+app.command("undo")(urungkan_cmd)
 app.command("versi")(versi)
 app.command("version")(versi)
 

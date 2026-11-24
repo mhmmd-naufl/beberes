@@ -1,0 +1,54 @@
+import json
+
+from beberes.io import Lembar
+from beberes.model import Perbaikan
+from beberes.report import terapkan, tulis_audit, urungkan
+
+
+def _lembar():
+    return Lembar(
+        nama="Data", header=["Nama", "Kota"], baris_header=1,
+        baris=[["  Ani  ", "Bandung"], ["Budi", "Medan"]],
+        baris_excel=[2, 3],
+    )
+
+
+def test_undo_mengembalikan_nilai_lama(tmp_path):
+    lembar = _lembar()
+    perbaikan = [Perbaikan(
+        kode="FMT001", aturan="fmt001", baris_excel=2, kolom_idx=0,
+        kolom="Nama", nilai_lama="  Ani  ", nilai_baru="Ani",
+    )]
+    baru, perubahan = terapkan(lembar, perbaikan)
+    assert baru.baris[0][0] == "Ani"
+
+    log = tmp_path / "audit.jsonl"
+    tulis_audit(log, perubahan)
+
+    # simulasi: file hasil = `baru` yang disimpan lalu dibaca ulang
+    from beberes.io import simpan
+    f = tmp_path / "hasil.xlsx"
+    simpan(baru, f)
+    dikembalikan = urungkan(f, log)
+    assert dikembalikan[0].baris[0][0] == "  Ani  "
+    assert dikembalikan[0].baris[1][0] == "Budi"
+
+
+def test_undo_baris_tidak_ditemukan_diabaikan(tmp_path):
+    lembar = _lembar()
+    _, perubahan = terapkan(lembar, [Perbaikan(
+        kode="FMT001", aturan="x", baris_excel=99, kolom_idx=0,
+        kolom="Nama", nilai_lama="lama", nilai_baru="baru",
+    )])
+    assert perubahan == []  # baris 99 tidak ada -> tidak diterapkan
+
+
+def test_baca_log_jsonl(tmp_path):
+    log = tmp_path / "a.jsonl"
+    log.write_text(
+        json.dumps({"sheet": "Data", "sel": "A2", "kolom_idx": 0,
+                    "baris_excel": 2, "nilai_lama": "x"}) + "\n",
+        encoding="utf-8",
+    )
+    from beberes.report.undo import _baca_log
+    assert len(_baca_log(log)) == 1

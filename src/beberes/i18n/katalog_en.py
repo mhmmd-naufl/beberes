@@ -13,6 +13,8 @@ PESAN = {
     "butuh_keputusan": "Needs decision: {n} fixes not applied automatically",
     "laporan_tersimpan": "Report saved: {path}",
     "audit_tersimpan": "Audit log saved: {path}",
+    "log_tidak_ada": "Audit log file not found: {log}",
+    "urungkan_selesai": "Changes undone -> {keluar}",
     "tidak_ada_temuan": "No problems found.",
     "error_baca": "Failed to read file: {detail}",
 }

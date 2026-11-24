@@ -1,5 +1,6 @@
 """Jalankan semua detector batch 1."""
 
+from ..dedupe import deteksi as deteksi_duplikat
 from ..io import Lembar
 from ..model import Temuan
 from ..profiling.profiler import Profil
@@ -13,4 +14,5 @@ def jalankan(lembar: Lembar, profil: Profil) -> list[Temuan]:
     temuan = []
     for detektor in SEMUA:
         temuan.extend(detektor(lembar, profil))
+    temuan.extend(deteksi_duplikat(lembar, profil))
     return temuan

@@ -45,6 +45,8 @@ def terapkan(lembar: Lembar, perbaikan: list[Perbaikan]) -> tuple[Lembar, list[d
             "sheet": lembar.nama,
             "sel": _sel_ref(p.kolom_idx, p.baris_excel),
             "kolom": p.kolom,
+            "kolom_idx": p.kolom_idx,
+            "baris_excel": p.baris_excel,
             "nilai_lama": lama,
             "nilai_baru": p.nilai_baru,
             "kode": p.kode,
@@ -58,6 +60,7 @@ def terapkan(lembar: Lembar, perbaikan: list[Perbaikan]) -> tuple[Lembar, list[d
         baris=baris,
         baris_excel=baris_excel,
         baris_kosong_dibuang=lembar.baris_kosong_dibuang,
+        baris_hantu_dibuang=lembar.baris_hantu_dibuang,
     )
     return baru, perubahan
 

@@ -13,6 +13,8 @@ PESAN = {
     "butuh_keputusan": "Butuh keputusan: {n} perbaikan tidak diterapkan otomatis",
     "laporan_tersimpan": "Laporan disimpan: {path}",
     "audit_tersimpan": "Audit log disimpan: {path}",
+    "log_tidak_ada": "File audit log tidak ditemukan: {log}",
+    "urungkan_selesai": "Perubahan di-undo -> {keluar}",
     "tidak_ada_temuan": "Tidak ada masalah ditemukan.",
     "error_baca": "Gagal membaca berkas: {detail}",
 }
