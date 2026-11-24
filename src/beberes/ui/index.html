@@ -4,22 +4,27 @@
 <meta charset="utf-8">
 <title>beberes — rapikan spreadsheet</title>
 <style>
-  body { font-family: system-ui, sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; color: #1c2430; }
+  body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; color: #1c2430; }
   h1 { font-size: 1.6rem; }
   .kartu { border: 1px solid #d5dbe3; border-radius: 10px; padding: 1rem; margin: 1rem 0; }
-  table { border-collapse: collapse; width: 100%; font-size: .85rem; }
-  th, td { border: 1px solid #e2e8f0; padding: .3rem .5rem; text-align: left; }
+  table { border-collapse: collapse; width: 100%; font-size: .82rem; }
+  th, td { border: 1px solid #e2e8f0; padding: .3rem .5rem; text-align: left; vertical-align: top; }
   th { background: #f1f5f9; }
   .error { color: #b91c1c; } .peringatan { color: #b45309; } .info { color: #1d4ed8; }
   button { background: #0f766e; color: #fff; border: 0; border-radius: 8px; padding: .6rem 1.2rem; font-size: 1rem; cursor: pointer; }
   button:disabled { opacity: .5; }
+  button.kecil { background: #e2e8f0; color: #1c2430; padding: .15rem .6rem; font-size: .78rem; }
   textarea { width: 100%; font-family: monospace; font-size: .8rem; }
   .muted { color: #64748b; font-size: .85rem; }
+  .konfirmasi { background: #fffbeb; }
+  .badge { display: inline-block; background: #fef3c7; color: #92400e; border-radius: 4px; padding: 0 .3rem; font-size: .72rem; }
+  td.lama { color: #991b1b; } td.baru { color: #166534; }
 </style>
 </head>
 <body>
 <h1>🧹 beberes</h1>
-<p class="muted">Periksa file Excel/CSV berantakan — tidak mengubah apa pun sampai kamu pilih bersihkan.</p>
+<p class="muted">Periksa file Excel/CSV berantakan — tidak mengubah apa pun sampai kamu pilih bersihkan.
+Perbaikan bertanda <span class="badge">konfirmasi</span> mengubah makna data: tidak dicentang otomatis.</p>
 
 <div class="kartu">
   <input type="file" id="file" accept=".xlsx,.xlsm,.xls,.csv">
@@ -27,7 +32,7 @@
   <textarea id="aturan" rows="4" placeholder="versi: 1&#10;kolom:&#10;  No HP:&#10;    tipe: hp"></textarea>
   <p>
     <button onclick="periksa()">Periksa</button>
-    <button onclick="bersihkan()" id="btnBersih" disabled>Bersihkan → unduh</button>
+    <button onclick="bersihkan()" id="btnBersih" disabled>Bersihkan terpilih → unduh</button>
   </p>
 </div>
 
@@ -35,52 +40,103 @@
 
 <script>
 const $ = id => document.getElementById(id);
-let fileTerakhir = null;
+const MAKS_TAMPIL = 500; // baris perbaikan dirender per sheet; sisanya ikut default
+let pilihan = new Set();  // id perbaikan yang akan diterapkan
 
-async function kirim(endpoint) {
+const esc = s => String(s).replace(/[&<>"']/g,
+  c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+async function kirim(endpoint, extra) {
   const fd = new FormData();
   fd.append("file", $("file").files[0]);
   const at = $("aturan").value.trim();
   if (at) fd.append("aturan", at);
+  if (extra) for (const [k, v] of Object.entries(extra)) fd.append(k, v);
   const r = await fetch(endpoint, { method: "POST", body: fd });
   if (!r.ok) throw new Error(await r.text());
   return r;
 }
 
+function renderPerbaikan(l, idxSheet) {
+  const d = l.detail || [];
+  if (!d.length) return "";
+  const tampil = d.slice(0, MAKS_TAMPIL);
+  const sisanya = d.length - tampil.length;
+  const baris = tampil.map(p => `
+    <tr class="${p.aman_otomatis ? "" : "konfirmasi"}">
+      <td><input type="checkbox" data-id="${p.id}" ${p.aman_otomatis ? "checked" : ""}
+           onchange="ubahPilihan(${p.id}, this.checked)"></td>
+      <td>${p.kode}<br><span class="muted">${esc(p.aturan)}</span></td>
+      <td>${esc(p.sel)}<br><span class="muted">${esc(p.kolom)}</span></td>
+      <td class="lama">${esc(p.nilai_lama)}</td>
+      <td class="baru">${esc(p.nilai_baru)}</td>
+      <td>${p.aman_otomatis ? "" : '<span class="badge">konfirmasi</span>'}</td>
+    </tr>`).join("");
+  return `<details open><summary><b>Perbaikan yang diusulkan (${d.length})</b>
+      <button class="kecil" onclick="semuaSheet(${idxSheet}, true)">semua</button>
+      <button class="kecil" onclick="semuaSheet(${idxSheet}, false)">kosongkan</button></summary>
+    <table><tr><th></th><th>Kode</th><th>Sel</th><th>Lama</th><th>Baru</th><th></th></tr>
+    ${baris}</table>
+    ${sisanya > 0 ? `<p class="muted">+${sisanya} perbaikan lain tidak ditampilkan — tetap mengikuti pilihan default (aman otomatis diterapkan, konfirmasi tidak).</p>` : ""}
+    </details>`;
+}
+
 function renderTemuan(lembar) {
-  return lembar.map(l => `
+  return lembar.map((l, i) => `
     <div class="kartu">
-      <b>Sheet '${l.sheet}'</b> — ${l.baris} baris, ${l.kolom} kolom —
+      <b>Sheet '${esc(l.sheet)}'</b> — ${l.baris} baris, ${l.kolom} kolom —
       skor ${l.skor} — ${l.temuan.length} temuan, ${l.perbaikan} perbaikan (${l.konfirmasi} butuh konfirmasi)
       ${l.temuan.length ? `<table><tr><th>Kode</th><th>Kolom</th><th>Tingkat</th><th>Pesan</th><th>Contoh</th></tr>` +
-        l.temuan.map(t => `<tr class="${t.tingkat}"><td>${t.kode}</td><td>${t.kolom}</td><td>${t.tingkat}</td><td>${t.pesan}</td><td>${(t.contoh||[]).join("; ")}</td></tr>`).join("") + `</table>` : "<p>✓ tidak ada masalah</p>"}
+        l.temuan.map(t => `<tr class="${t.tingkat}"><td>${t.kode}</td><td>${esc(t.kolom)}</td><td>${t.tingkat}</td><td>${esc(t.pesan)}</td><td>${(t.contoh||[]).map(esc).join("; ")}</td></tr>`).join("") + `</table>` : "<p>✓ tidak ada masalah</p>"}
+      ${renderPerbaikan(l, i)}
     </div>`).join("");
+}
+
+function ubahPilihan(id, centang) {
+  centang ? pilihan.add(id) : pilihan.delete(id);
+}
+
+function semuaSheet(idx, centang) {
+  // perbarui checkbox yang terlihat + set untuk seluruh sheet (termasuk tak tampil)
+  const kartu = document.querySelectorAll("#hasil .kartu")[idx];
+  kartu.querySelectorAll("input[data-id]").forEach(cb => {
+    cb.checked = centang;
+    centang ? pilihan.add(+cb.dataset.id) : pilihan.delete(+cb.dataset.id);
+  });
+  // id yang tak dirender tetap diatur lewat data global
+  window._detailSemua[idx].forEach(p => {
+    centang ? pilihan.add(p.id) : pilihan.delete(p.id);
+  });
 }
 
 async function periksa() {
   $("hasil").innerHTML = "memeriksa…";
   $("btnBersih").disabled = true;
+  pilihan = new Set();
   try {
     const r = await kirim("/api/periksa");
     const data = await r.json();
-    fileTerakhir = true;
+    window._detailSemua = data.lembar.map(l => l.detail || []);
+    data.lembar.forEach(l => (l.detail || []).forEach(p => {
+      if (p.aman_otomatis) pilihan.add(p.id);
+    }));
     $("btnBersih").disabled = false;
     $("hasil").innerHTML = renderTemuan(data.lembar);
-  } catch (e) { $("hasil").innerHTML = `<p class="error">${e.message}</p>`; }
+  } catch (e) { $("hasil").innerHTML = `<p class="error">${esc(e.message)}</p>`; }
 }
 
 async function bersihkan() {
   $("btnBersih").disabled = true;
   $("hasil").innerHTML += "<p>membersihkan…</p>";
   try {
-    const r = await kirim("/api/bersihkan");
+    const r = await kirim("/api/bersihkan", { terpilih: JSON.stringify([...pilihan]) });
     const data = await r.json();
     const a = document.createElement("a");
     a.href = data.unduh; a.textContent = `Unduh ${data.unduh.split("/").pop()}`;
     $("hasil").insertAdjacentHTML("beforeend",
       `<div class="kartu">✓ ${data.perubahan} perubahan diterapkan — <a href="${data.unduh}">unduh file bersih</a><br>
-       <details><summary>audit log (${data.perubahan} baris)</summary><pre class="muted">${data.audit.slice(0,4000)}</pre></details></div>`);
-  } catch (e) { $("hasil").innerHTML += `<p class="error">${e.message}</p>`; }
+       <details><summary>audit log (${data.perubahan} baris)</summary><pre class="muted">${esc(data.audit.slice(0,4000))}</pre></details></div>`);
+  } catch (e) { $("hasil").innerHTML += `<p class="error">${esc(e.message)}</p>`; }
   $("btnBersih").disabled = false;
 }
 </script>

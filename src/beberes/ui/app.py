@@ -10,10 +10,12 @@ from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse
+from openpyxl.utils import get_column_letter
 
 from ..detectors import jalankan as deteksi_semua
 from ..fixers import usulkan_semua
-from ..io import baca_berkas, simpan
+from ..io import Lembar, baca_berkas, simpan
+from ..model import Perbaikan
 from ..profiling import hitung_skor, profil_lbr
 from ..report import terapkan
 from ..rules import muat as muat_aturan
@@ -22,16 +24,37 @@ from ..rules import periksa as periksa_aturan
 _TEMPLATE = Path(__file__).parent / "index.html"
 
 
+def _proses_lembar(lembar: Lembar, aturan) -> tuple[list, list[Perbaikan], int]:
+    """Deteksi + usulkan perbaikan untuk satu sheet."""
+    profil = profil_lbr(lembar)
+    temuan = deteksi_semua(lembar, profil)
+    if aturan is not None:
+        temuan.extend(periksa_aturan(lembar, aturan))
+    skor = hitung_skor(profil, temuan)
+    perbaikan = usulkan_semua(temuan, lembar)
+    return temuan, perbaikan, skor
+
+
+def _perbaikan_json(p: Perbaikan, gid: int) -> dict:
+    return {
+        "id": gid,
+        "kode": p.kode,
+        "aturan": p.aturan,
+        "kolom": p.kolom,
+        "baris_excel": p.baris_excel,
+        "sel": f"{get_column_letter(p.kolom_idx + 1)}{p.baris_excel}",
+        "nilai_lama": str(p.nilai_lama),
+        "nilai_baru": str(p.nilai_baru),
+        "aman_otomatis": p.aman_otomatis,
+    }
+
+
 def _proses_berkas(path: Path, aturan=None):
-    """Kembalikan (lembar_list, ringkasan per sheet)."""
+    """Kembalikan (lembar_list, ringkasan per sheet) dengan detail perbaikan."""
     ringkasan = []
+    gid = 0
     for lembar in baca_berkas(path):
-        profil = profil_lbr(lembar)
-        temuan = deteksi_semua(lembar, profil)
-        if aturan is not None:
-            temuan.extend(periksa_aturan(lembar, aturan))
-        skor = hitung_skor(profil, temuan)
-        perbaikan = usulkan_semua(temuan, lembar)
+        temuan, perbaikan, skor = _proses_lembar(lembar, aturan)
         ringkasan.append({
             "sheet": lembar.nama,
             "baris": len(lembar.baris),
@@ -44,8 +67,28 @@ def _proses_berkas(path: Path, aturan=None):
             ],
             "perbaikan": len(perbaikan),
             "konfirmasi": sum(1 for p in perbaikan if not p.aman_otomatis),
+            "detail": [_perbaikan_json(p, gid + i) for i, p in enumerate(perbaikan)],
         })
+        gid += len(perbaikan)
     return ringkasan
+
+
+async def _simpan_unggahan(file: UploadFile) -> Path:
+    with tempfile.NamedTemporaryFile(
+        suffix=Path(file.filename or "data.xlsx").suffix, delete=False
+    ) as tmp:
+        tmp.write(await file.read())
+        return Path(tmp.name)
+
+
+def _muat_aturan(aturan: str | None):
+    if not aturan:
+        return None
+    with tempfile.NamedTemporaryFile(
+        suffix=".yaml", delete=False, mode="w", encoding="utf-8"
+    ) as yf:
+        yf.write(aturan)
+    return muat_aturan(Path(yf.name))
 
 
 def buat_app() -> FastAPI:
@@ -57,50 +100,49 @@ def buat_app() -> FastAPI:
 
     @app.post("/api/periksa")
     async def periksa(file: UploadFile = File(...), aturan: str | None = Form(None)):
-        with tempfile.NamedTemporaryFile(
-            suffix=Path(file.filename or "data.xlsx").suffix, delete=False
-        ) as tmp:
-            tmp.write(await file.read())
-            path = Path(tmp.name)
+        path = await _simpan_unggahan(file)
         try:
-            at = None
-            if aturan:
-                with tempfile.NamedTemporaryFile(
-                    suffix=".yaml", delete=False, mode="w", encoding="utf-8"
-                ) as yf:
-                    yf.write(aturan)
-                    at = muat_aturan(Path(yf.name))
-            return {"lembar": _proses_berkas(path, at)}
+            return {"lembar": _proses_berkas(path, _muat_aturan(aturan))}
         except Exception as e:
             raise HTTPException(400, f"Gagal memproses: {e}") from e
         finally:
             path.unlink(missing_ok=True)
 
     @app.post("/api/bersihkan")
-    async def bersihkan(file: UploadFile = File(...), aturan: str | None = Form(None)):
-        with tempfile.NamedTemporaryFile(
-            suffix=Path(file.filename or "data.xlsx").suffix, delete=False
-        ) as tmp:
-            tmp.write(await file.read())
-            path = Path(tmp.name)
+    async def bersihkan(
+        file: UploadFile = File(...),
+        aturan: str | None = Form(None),
+        terpilih: str | None = Form(None),
+    ):
+        path = await _simpan_unggahan(file)
         try:
-            at = None
-            if aturan:
-                with tempfile.NamedTemporaryFile(
-                    suffix=".yaml", delete=False, mode="w", encoding="utf-8"
-                ) as yf:
-                    yf.write(aturan)
-                    at = muat_aturan(Path(yf.name))
+            at = _muat_aturan(aturan)
             lembar_list = baca_berkas(path)
             semua_perubahan = []
             keluar_lembar = []
+
+            # indeks perbaikan bersifat deterministik: file sama -> urutan sama,
+            # jadi pilihan dari /api/periksa tetap valid di sini.
+            pilihan = None
+            if terpilih is not None:
+                pilihan = set(json.loads(terpilih))
+
+            gid = 0
             for lembar in lembar_list:
-                profil = profil_lbr(lembar)
-                temuan = deteksi_semua(lembar, profil)
-                if at is not None:
-                    temuan.extend(periksa_aturan(lembar, at))
-                perbaikan = usulkan_semua(temuan, lembar)
-                baru, perubahan = terapkan(lembar, perbaikan)
+                _, perbaikan, _ = _proses_lembar(lembar, at)
+                if pilihan is None:
+                    subset = perbaikan
+                    abaikan = False
+                else:
+                    subset = [
+                        p for i, p in enumerate(perbaikan)
+                        if gid + i in pilihan
+                    ]
+                    abaikan = True
+                gid += len(perbaikan)
+                baru, perubahan = terapkan(
+                    lembar, subset, abaikan_aman_otomatis=abaikan
+                )
                 keluar_lembar.append(baru)
                 semua_perubahan.extend(perubahan)
 

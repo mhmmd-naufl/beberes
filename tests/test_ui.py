@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from fastapi.testclient import TestClient
 from openpyxl import Workbook
@@ -55,3 +57,38 @@ def test_bersihkan_dan_unduh(client):
     r2 = c.get(data["unduh"])
     assert r2.status_code == 200
     assert r2.content[:2] == b"PK"  # file xlsx = zip
+
+
+def test_periksa_mengembalikan_detail_perbaikan(client):
+    c, f = client
+    data = _unggah(c, f).json()
+    detail = data["lembar"][0]["detail"]
+    assert detail, "harus ada usulan perbaikan untuk '  Ani  '"
+    p = detail[0]
+    for k in ("id", "kode", "sel", "nilai_lama", "nilai_baru", "aman_otomatis"):
+        assert k in p
+
+
+def _bersihkan(client, path, **form):
+    with open(path, "rb") as fp:
+        return client.post(
+            "/api/bersihkan",
+            files={"file": ("data.xlsx", fp, "application/octet-stream")},
+            data=form,
+        )
+
+
+def test_bersihkan_terpilih_subset(client):
+    c, f = client
+    detail = _unggah(c, f).json()["lembar"][0]["detail"]
+    # hanya terapkan perbaikan pertama
+    r = _bersihkan(c, f, terpilih=json.dumps([detail[0]["id"]]))
+    assert r.status_code == 200
+    assert r.json()["perubahan"] == 1
+
+
+def test_bersihkan_terpilih_kosong(client):
+    c, f = client
+    r = _bersihkan(c, f, terpilih="[]")
+    assert r.status_code == 200
+    assert r.json()["perubahan"] == 0

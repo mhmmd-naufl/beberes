@@ -34,6 +34,20 @@ def test_undo_mengembalikan_nilai_lama(tmp_path):
     assert dikembalikan[0].baris[1][0] == "Budi"
 
 
+def test_konfirmasi_diterapkan_bila_diabaikan():
+    """Perbaikan aman_otomatis=False diskip default, diterapkan bila flag."""
+    lembar = _lembar()
+    p = [Perbaikan(
+        kode="TGL002", aturan="x", baris_excel=2, kolom_idx=0,
+        kolom="Nama", nilai_lama="  Ani  ", nilai_baru="Ani",
+        aman_otomatis=False,
+    )]
+    assert terapkan(lembar, p)[1] == []
+    baru, perubahan = terapkan(lembar, p, abaikan_aman_otomatis=True)
+    assert baru.baris[0][0] == "Ani"
+    assert len(perubahan) == 1
+
+
 def test_undo_baris_tidak_ditemukan_diabaikan(tmp_path):
     lembar = _lembar()
     _, perubahan = terapkan(lembar, [Perbaikan(

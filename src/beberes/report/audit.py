@@ -18,10 +18,16 @@ def _sel_ref(kolom_idx: int, baris_excel: int) -> str:
     return f"{get_column_letter(kolom_idx + 1)}{baris_excel}"
 
 
-def terapkan(lembar: Lembar, perbaikan: list[Perbaikan]) -> tuple[Lembar, list[dict]]:
+def terapkan(
+    lembar: Lembar,
+    perbaikan: list[Perbaikan],
+    abaikan_aman_otomatis: bool = False,
+) -> tuple[Lembar, list[dict]]:
     """Terapkan perbaikan otomatis ke salinan data.
 
-    Hanya Perbaikan dengan aman_otomatis=True yang diterapkan (D-009).
+    Hanya Perbaikan dengan aman_otomatis=True yang diterapkan (D-009),
+    kecuali abaikan_aman_otomatis=True — dipakai UI saat user secara
+    eksplisit mencentang perbaikan yang butuh konfirmasi.
     Mengembalikan (Lembar baru, daftar catatan perubahan).
     """
     baris = [list(b) for b in lembar.baris]
@@ -29,7 +35,7 @@ def terapkan(lembar: Lembar, perbaikan: list[Perbaikan]) -> tuple[Lembar, list[d
     perubahan = []
 
     for p in perbaikan:
-        if not p.aman_otomatis:
+        if not p.aman_otomatis and not abaikan_aman_otomatis:
             continue
         try:
             r = baris_excel.index(p.baris_excel)
