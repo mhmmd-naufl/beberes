@@ -101,7 +101,7 @@ disebut tetap diperiksa detektor generik.
 | Kode | Perbaikan | Otomatis? |
 |---|---|---|
 | HP001 | `0812...` -> `+62812...` | Ya |
-| NAMA001 | pisah gelar dari nama | Tidak (butuh kolom tujuan) |
+| NAMA001 | gelar dipisah dari nama (`Drs. Budi` → `Budi`) | Konfirmasi (`--konfirmasi`) |
 | WIL001 | ganti typo -> nama benar | Tidak (saran tampil di laporan) |
 | NIK/NPWP/PLAT | — | Tidak, hanya ditandai |
 | TGL002 | tanggal ambigu dd/mm | Tidak |

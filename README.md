@@ -5,7 +5,7 @@
 
 🇮🇩 [Versi Bahasa Indonesia](README.id.md)
 
-**Status:** planning (pre-v0.1)
+**Status:** v0.3.0 — dedupe, undo, mode konfirmasi, benchmark akurasi
 
 *"Beberes"* is Indonesian for "tidying up". It does that to your data.
 
@@ -32,11 +32,17 @@ pip install beberes
 # inspect only, change nothing (safe default)
 beberes check data.xlsx          # Indonesian alias: beberes periksa
 
-# apply fixes, write a new file + report
+# apply fixes, write a new file + report + audit log
 beberes clean data.xlsx --out data_clean.xlsx --report    # alias: beberes bersihkan
 
-# use your own rules
-beberes clean data.xlsx --rules rules.yaml
+# Indonesian-domain rules (NIK, HP, wilayah, dll.)
+beberes clean data.xlsx --rules peserta.yaml               # alias: --aturan
+
+# confirm ambiguous fixes interactively (dates dd/mm, gelar, dll.)
+beberes clean data.xlsx --confirm
+
+# undo changes from an audit log
+beberes undo data_clean.xlsx --log data_clean.audit.jsonl --out restored.xlsx
 
 # message language: id or en (defaults to system language)
 beberes check data.xlsx --lang en

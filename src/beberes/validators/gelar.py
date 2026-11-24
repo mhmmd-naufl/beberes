@@ -33,6 +33,21 @@ def _adalah_gelar(teks: str) -> bool:
     return segmen_pertama in GELAR or bersih in GELAR
 
 
+def pisah_gelar(nilai) -> str | None:
+    """Kembalikan nama tanpa token gelar, atau None kalau tak ada gelar."""
+    if nilai is None:
+        return None
+    teks = str(nilai).strip()
+    if not teks:
+        return None
+    sisa = [
+        token for token in re.split(r"[\s,]+", teks)
+        if token.strip(".") and not _adalah_gelar(token.strip("."))
+    ]
+    hasil = " ".join(sisa).strip(" ,")
+    return hasil if hasil != teks else None
+
+
 def periksa_gelar(nilai) -> list[str]:
     """Kembalikan ['NAMA001'] kalau nama mengandung gelar."""
     if nilai is None:

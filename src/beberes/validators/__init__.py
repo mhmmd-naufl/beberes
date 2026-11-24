@@ -1,4 +1,4 @@
-from .gelar import GELAR, periksa_gelar
+from .gelar import GELAR, periksa_gelar, pisah_gelar
 from .hp import normalisasi_hp, periksa_hp
 from .nik import periksa_nik
 from .npwp import periksa_npwp
@@ -9,6 +9,7 @@ __all__ = [
     "GELAR",
     "normalisasi_hp",
     "periksa_gelar",
+    "pisah_gelar",
     "periksa_hp",
     "periksa_nik",
     "periksa_npwp",

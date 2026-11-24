@@ -9,6 +9,7 @@ from beberes.validators import (
     periksa_npwp,
     periksa_plat,
     periksa_wilayah,
+    pisah_gelar,
     saran_wilayah,
 )
 
@@ -123,3 +124,16 @@ def test_saran_wilayah():
     assert saran_wilayah("Banyuwamgi") == "Banyuwangi"
     assert saran_wilayah("Bandung") == "Bandung"
     assert saran_wilayah("zzzz") is None
+
+
+# --- Pisah gelar ------------------------------------------------------------
+
+@pytest.mark.parametrize("nilai,hasil", [
+    ("Drs. Budi Santoso", "Budi Santoso"),
+    ("Budi Santoso, S.Kom.", "Budi Santoso"),
+    ("H. Ahmad, M.A.", "Ahmad"),
+    ("Budi Santoso", None),
+    (None, None),
+])
+def test_pisah_gelar(nilai, hasil):
+    assert pisah_gelar(nilai) == hasil
