@@ -17,6 +17,19 @@ app = typer.Typer(
     add_completion=False,
 )
 
+@app.callback(invoke_without_command=True)
+def _root(
+    versi_flag: bool = typer.Option(
+        False, "--version", "-v", is_eager=True,
+        help="Tampilkan versi | Show version",
+    ),
+) -> None:
+    if versi_flag:
+        atur_bahasa(None)
+        typer.echo(t("versi", versi=__version__))
+        raise typer.Exit()
+
+
 BERKAS = typer.Argument(..., help="Berkas .xlsx / .csv  |  File to process")
 BAHASA = typer.Option(None, "--bahasa", "--lang", help="id | en")
 

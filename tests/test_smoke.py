@@ -11,7 +11,7 @@ runner = CliRunner()
 def test_versi():
     hasil = runner.invoke(app, ["versi", "--lang", "en"])
     assert hasil.exit_code == 0
-    assert "0.0.1" in hasil.output
+    assert "0.1.0" in hasil.output
 
 
 def test_alias_dua_bahasa(tmp_path: Path):
