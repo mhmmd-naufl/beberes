@@ -24,6 +24,8 @@ from ..rules import periksa as periksa_aturan
 
 _TEMPLATE = Path(__file__).parent / "index.html"
 _ICONS = Path(__file__).parent / "icons"
+_DIR = Path(__file__).parent
+_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
 def _proses_lembar(lembar: Lembar, aturan) -> tuple[list, list[Perbaikan], int]:
@@ -166,6 +168,10 @@ def buat_app() -> FastAPI:
     @app.get("/favicon-32.png")
     def favicon_png():
         return FileResponse(_ICONS / "favicon-32.png", media_type="image/png")
+
+    @app.get("/contoh.xlsx")
+    def contoh():
+        return FileResponse(_DIR / "contoh.xlsx", media_type=_XLSX)
 
     @app.post("/api/periksa")
     async def periksa(file: UploadFile = File(...), aturan: str | None = Form(None)):

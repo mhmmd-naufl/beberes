@@ -51,6 +51,13 @@ def test_favicon(client):
     assert r.headers["content-type"] == "image/svg+xml"
 
 
+def test_contoh_unduhan(client):
+    c, _ = client
+    r = c.get("/contoh.xlsx")
+    assert r.status_code == 200
+    assert r.content[:2] == b"PK"  # xlsx adalah zip
+
+
 def test_periksa(client):
     c, f = client
     r = _unggah(c, f)

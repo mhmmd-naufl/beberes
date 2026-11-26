@@ -51,6 +51,7 @@
 <div class="kartu">
   <label class="label" for="file" data-i18n="label_berkas">Berkas Excel/CSV</label>
   <input type="file" id="file" accept=".xlsx,.xlsm,.xls,.csv">
+  <p class="muted"><a href="/contoh.xlsx" data-i18n="link_contoh">Belum punya file? Unduh contoh (.xlsx, data sintetis)</a></p>
   <label class="label" for="aturan" data-i18n="label_aturan">Aturan YAML opsional</label>
   <p class="muted" data-i18n="aturan_hint">Kosongkan untuk pemeriksaan umum.</p>
   <textarea id="aturan" rows="4" data-i18n-ph="placeholder_aturan" placeholder="versi: 1&#10;kolom:&#10;  No HP:&#10;    tipe: hp"></textarea>
@@ -71,6 +72,7 @@ const I18N = {
 id: {
   judul: "beberes", subjudul: "Periksa file Excel/CSV berantakan. File tidak diubah sampai kamu pilih bersihkan.",
   label_berkas: "Berkas Excel/CSV", label_aturan: "Aturan YAML opsional",
+  link_contoh: "Belum punya file? Unduh contoh (.xlsx, data sintetis)",
   aturan_hint: "Kosongkan untuk pemeriksaan umum.",
   btn_periksa: "Periksa", btn_bersih: "Bersihkan & unduh", btn_urungkan: "Urungkan perubahan",
   placeholder_aturan: "versi: 1\nkolom:\n  No HP:\n    tipe: hp",
@@ -91,6 +93,7 @@ id: {
 en: {
   judul: "beberes", subjudul: "Check messy Excel/CSV files. Nothing changes until you choose to clean.",
   label_berkas: "Excel/CSV file", label_aturan: "Optional YAML rules",
+  link_contoh: "No file handy? Download a sample (.xlsx, synthetic data)",
   aturan_hint: "Leave empty for a general check.",
   btn_periksa: "Check", btn_bersih: "Clean & download", btn_urungkan: "Undo changes",
   placeholder_aturan: "versi: 1\nkolom:\n  No HP:\n    tipe: hp",
