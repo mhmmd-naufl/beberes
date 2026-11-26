@@ -1,13 +1,24 @@
+<div align="center">
+
+<img src="assets/icons/beberes-mark.svg" alt="beberes" width="96" height="96">
+
 # beberes
 
-<img src="assets/icons/beberes-mark.svg" alt="" width="64" height="64">
+*Tidy up messy Indonesian spreadsheets.*
 
-> *Tidy up messy Indonesian spreadsheets.*
-> A data-quality engine for messy Excel/CSV files, built for how Indonesian data actually looks.
+[![PyPI version](https://img.shields.io/pypi/v/beberes)](https://pypi.org/project/beberes/)
+[![Python versions](https://img.shields.io/pypi/pyversions/beberes)](https://pypi.org/project/beberes/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/mhmmd-naufl/beberes/actions/workflows/ci.yml/badge.svg)](https://github.com/mhmmd-naufl/beberes/actions/workflows/ci.yml)
+
+A data-quality engine for messy Excel/CSV files, built for how Indonesian data actually looks.
+Everything runs **locally**. No data leaves your computer.
 
 🇮🇩 [Versi Bahasa Indonesia](README.id.md)
 
-**Status:** v0.5.0 — local browser UI (`beberes ui`), dedupe, undo, mode konfirmasi, benchmark akurasi, wilayah resmi
+**Status:** v0.5.1 — local browser UI (`beberes ui`), dedupe, undo, mode konfirmasi, benchmark akurasi, wilayah resmi
+
+</div>
 
 ![demo](docs/demo.gif)
 
@@ -25,8 +36,6 @@ data scientists and don't understand Indonesian formats (NIK, NPWP, plate number
 ```
 read file -> profile columns -> detect issues -> propose fixes -> apply -> report + audit log
 ```
-
-Everything runs **locally**. No data leaves your computer.
 
 ## Usage
 

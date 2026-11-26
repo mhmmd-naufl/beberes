@@ -1,13 +1,24 @@
+<div align="center">
+
+<img src="assets/icons/beberes-mark.svg" alt="beberes" width="96" height="96">
+
 # beberes
 
-<img src="assets/icons/beberes-mark.svg" alt="" width="64" height="64">
+*Tidy up messy Indonesian spreadsheets.*
 
-> *Tidy up messy Indonesian spreadsheets.*
-> Engine kualitas data untuk file Excel/CSV yang berantakan, dibuat untuk kebiasaan data Indonesia.
+[![Versi PyPI](https://img.shields.io/pypi/v/beberes)](https://pypi.org/project/beberes/)
+[![Versi Python](https://img.shields.io/pypi/pyversions/beberes)](https://pypi.org/project/beberes/)
+[![Lisensi: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/mhmmd-naufl/beberes/actions/workflows/ci.yml/badge.svg)](https://github.com/mhmmd-naufl/beberes/actions/workflows/ci.yml)
+
+Engine kualitas data untuk file Excel/CSV yang berantakan, dibuat untuk kebiasaan data Indonesia.
+Semua proses berjalan **lokal**. Tidak ada data yang dikirim keluar dari komputer.
 
 🇬🇧 [English version](README.md)
 
-**Status:** v0.5.0 — UI lokal di browser (`beberes ui`), dedupe, undo, mode konfirmasi, benchmark akurasi, wilayah resmi
+**Status:** v0.5.1 — UI lokal di browser (`beberes ui`), dedupe, undo, mode konfirmasi, benchmark akurasi, wilayah resmi
+
+</div>
 
 ![demo](docs/demo.gif)
 
@@ -24,8 +35,6 @@ dan tidak paham format Indonesia (NIK, NPWP, plat, Rupiah, gelar, wilayah).
 ```
 baca file -> profil kolom -> deteksi masalah -> usul perbaikan -> terapkan -> laporan + audit log
 ```
-
-Semua proses berjalan **lokal**. Tidak ada data yang dikirim keluar dari komputer.
 
 ## Rencana penggunaan
 
