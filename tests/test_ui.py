@@ -59,6 +59,16 @@ def test_bersihkan_dan_unduh(client):
     assert r2.content[:2] == b"PK"  # file xlsx = zip
 
 
+def test_audit_log_bisa_diunduh(client):
+    c, f = client
+    data = _bersihkan(c, f).json()
+    r = c.get(data["audit_url"])
+    assert r.status_code == 200
+    baris = [json.loads(b) for b in r.text.strip().splitlines()]
+    assert len(baris) == data["perubahan"]
+    assert all("kode" in b and "nilai_lama" in b for b in baris)
+
+
 def _bersihkan(client, path, grup_aktif=None):
     data = {}
     if grup_aktif is not None:

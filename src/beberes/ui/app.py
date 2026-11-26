@@ -15,7 +15,7 @@ from ..detectors import jalankan as deteksi_semua
 from ..fixers import usulkan_semua
 from ..io import baca_berkas, simpan
 from ..profiling import hitung_skor, profil_lbr
-from ..report import terapkan
+from ..report import terapkan, tulis_audit
 from ..rules import muat as muat_aturan
 from ..rules import periksa as periksa_aturan
 
@@ -170,13 +170,20 @@ def buat_app() -> FastAPI:
                 Path(file.filename or "data").stem + "_bersih" + suf
             )
             tujuan = folder / nama_keluar
+            n = 1
+            while tujuan.exists():  # file sama dinilai ulang -> nama unik
+                tujuan = folder / f"{Path(nama_keluar).stem}_{n}{suf}"
+                n += 1
             simpan(keluar_lembar, tujuan)
 
             audit = "\n".join(
                 json.dumps(p, ensure_ascii=False) for p in semua_perubahan
             )
+            nama_audit = tujuan.stem + ".audit.jsonl"
+            tulis_audit(folder / nama_audit, semua_perubahan)
             return {
-                "unduh": f"/unduh/{nama_keluar}",
+                "unduh": f"/unduh/{tujuan.name}",
+                "audit_url": f"/unduh/{nama_audit}",
                 "audit": audit,
                 "perubahan": len(semua_perubahan),
             }

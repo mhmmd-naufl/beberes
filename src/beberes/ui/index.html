@@ -13,6 +13,8 @@
   .error { color: #b91c1c; } .peringatan { color: #b45309; } .info { color: #1d4ed8; }
   button { background: #0f766e; color: #fff; border: 0; border-radius: 8px; padding: .6rem 1.2rem; font-size: 1rem; cursor: pointer; }
   button:disabled { opacity: .5; }
+  button.kecil { background: #e2e8f0; color: #1c2430; padding: .15rem .6rem; font-size: .75rem; margin-left: .4rem; }
+  .scroll { max-height: 320px; overflow: auto; }
   textarea { width: 100%; font-family: monospace; font-size: .8rem; }
   .muted { color: #64748b; font-size: .85rem; }
 </style>
@@ -35,7 +37,6 @@
 
 <script>
 const $ = id => document.getElementById(id);
-let fileTerakhir = null;
 
 async function kirim(endpoint) {
   const fd = new FormData();
@@ -63,7 +64,14 @@ function renderGrup(l, i) {
       <span class="muted">${esc(contoh)}</span>
     </label>`;
   }).join("");
-  return `<details><summary>Perbaikan per grup (${l.grup.length})</summary>${baris}</details>`;
+  return `<details><summary>Perbaikan per grup (${l.grup.length})
+    <button class="kecil" onclick="toggleGrup(this,true)">semua</button>
+    <button class="kecil" onclick="toggleGrup(this,false)">kosongkan</button></summary>${baris}</details>`;
+}
+
+function toggleGrup(btn, nilai) {
+  btn.closest(".kartu").querySelectorAll("input[data-kunci]")
+    .forEach(cb => { cb.checked = nilai; });
 }
 
 function renderTemuan(lembar) {
@@ -78,15 +86,20 @@ function renderTemuan(lembar) {
 }
 
 async function periksa() {
+  if (!$("file").files.length) {
+    $("hasil").innerHTML = `<p class="error">Pilih berkas dulu.</p>`;
+    return;
+  }
   $("hasil").innerHTML = "memeriksa…";
   $("btnBersih").disabled = true;
   try {
     const r = await kirim("/api/periksa");
     const data = await r.json();
-    fileTerakhir = true;
     centang = new Set();
     $("btnBersih").disabled = false;
-    $("hasil").innerHTML = renderTemuan(data.lembar);
+    const nama = $("file").files[0] ? $("file").files[0].name : "";
+    $("hasil").innerHTML =
+      `<p class="muted">Berkas: ${esc(nama)}</p>` + renderTemuan(data.lembar);
   } catch (e) { $("hasil").innerHTML = `<p class="error">${e.message}</p>`; }
 }
 
@@ -105,11 +118,21 @@ async function bersihkan() {
     const r = await fetch("/api/bersihkan", { method: "POST", body: fd });
     if (!r.ok) throw new Error(await r.text());
     const data = await r.json();
-    const a = document.createElement("a");
-    a.href = data.unduh; a.textContent = `Unduh ${data.unduh.split("/").pop()}`;
+    const barisAudit = (data.audit || "").split("\n").filter(Boolean)
+      .map(l => { try { return JSON.parse(l); } catch { return null; } })
+      .filter(Boolean);
+    const MAKS = 200;
+    const isiAudit = barisAudit.slice(0, MAKS).map(p =>
+      `<tr><td>${esc(p.sheet)}</td><td>${esc(p.sel)}</td><td>${esc(p.kolom)}</td>
+       <td>${esc(p.kode)}</td><td>${esc(p.nilai_lama)} → ${esc(p.nilai_baru)}</td></tr>`
+    ).join("");
     $("hasil").insertAdjacentHTML("beforeend",
-      `<div class="kartu">✓ ${data.perubahan} perubahan diterapkan — <a href="${data.unduh}">unduh file bersih</a><br>
-       <details><summary>audit log (${data.perubahan} baris)</summary><pre class="muted">${data.audit.slice(0,4000)}</pre></details></div>`);
+      `<div class="kartu">✓ ${data.perubahan} perubahan diterapkan —
+       <a href="${data.unduh}">unduh file bersih</a> ·
+       <a href="${data.audit_url}">unduh audit log</a><br>
+       <details><summary>audit log (${data.perubahan} baris)</summary>
+       <div class="scroll"><table><tr><th>Sheet</th><th>Sel</th><th>Kolom</th><th>Kode</th><th>Perubahan</th></tr>${isiAudit}</table>
+       ${barisAudit.length > MAKS ? `<p class="muted">…dan ${barisAudit.length - MAKS} baris lagi (lihat file audit)</p>` : ""}</div></details></div>`);
   } catch (e) { $("hasil").innerHTML += `<p class="error">${e.message}</p>`; }
   $("btnBersih").disabled = false;
 }
