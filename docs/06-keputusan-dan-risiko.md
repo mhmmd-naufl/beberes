@@ -19,6 +19,7 @@ Format: ID, keputusan, alasan, status (`Diputuskan` / `Terbuka`).
 | D-011 | README dua bahasa (Inggris `README.md`, Indonesia `README.id.md`) sejak v0.1; dokumen detail Indonesia dulu, Inggris menyusul | Terbaca orang luar di GitHub tanpa menunda dokumentasi detail | Diputuskan |
 | D-012 | Modul `i18n` (katalog pesan id/en) dipasang sejak v0.1; pesan user tidak boleh hard-code | Jauh lebih murah daripada refactor belakangan | Diputuskan |
 | D-013 | Kunci YAML aturan: Indonesia saja, atau tambah alias Inggris (`columns`, `rules`, ...) | Alias memudahkan user asing, tapi menambah beban skema | Terbuka |
+| D-014 | UI tetap single-page HTML + vanilla JS via FastAPI; `pywebview` (jendela desktop) ditunda ke v0.6+ sebagai kandidat upgrade pertama | Scope v0.5 sudah utuh; pywebview bernilai tinggi untuk user non-teknis tapi belum ada bukti dibutuhkan — tunggu feedback user nyata (docs/05) | Diputuskan |
 
 Tambahkan entri baru di bawah dengan format yang sama. Jangan hapus keputusan lama, ubah statusnya.
 
