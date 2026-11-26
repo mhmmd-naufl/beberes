@@ -2,38 +2,59 @@
 <html lang="id">
 <head>
 <meta charset="utf-8">
-<title>beberes — rapikan spreadsheet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>beberes: rapikan spreadsheet</title>
 <style>
+  /* Tema tetap terang: alat utilitas lokal yang hasilnya sering dibagikan
+     atau dicetak; toggle dark-mode sengaja tidak dibuat (keputusan R-21,
+     lihat anti-slop/audit-001-2026-11-26.md). */
   body { font-family: system-ui, sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; color: #1c2430; }
-  h1 { font-size: 1.6rem; }
+  h1 { font-size: 1.6rem; margin-bottom: .25rem; }
   .kartu { border: 1px solid #d5dbe3; border-radius: 10px; padding: 1rem; margin: 1rem 0; }
+  .label { display: block; font-weight: 600; margin: .75rem 0 .25rem; }
   table { border-collapse: collapse; width: 100%; font-size: .85rem; }
   th, td { border: 1px solid #e2e8f0; padding: .3rem .5rem; text-align: left; }
   th { background: #f1f5f9; }
   .error { color: #b91c1c; } .peringatan { color: #b45309; } .info { color: #1d4ed8; }
-  button { background: #0f766e; color: #fff; border: 0; border-radius: 8px; padding: .6rem 1.2rem; font-size: 1rem; cursor: pointer; }
-  button:disabled { opacity: .5; }
-  button.kecil { background: #e2e8f0; color: #1c2430; padding: .15rem .6rem; font-size: .75rem; margin-left: .4rem; }
-  .scroll { max-height: 320px; overflow: auto; }
-  textarea { width: 100%; font-family: monospace; font-size: .8rem; }
+  button, summary, label { cursor: pointer; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  button:focus-visible, a:focus-visible, input:focus-visible,
+  textarea:focus-visible, summary:focus-visible {
+    outline: 2px solid #0f766e; outline-offset: 2px;
+  }
+  button { background: #0f766e; color: #fff; border: 0; border-radius: 8px; padding: .6rem 1.2rem; font-size: 1rem; }
+  button.kecil { background: #e2e8f0; color: #1c2430; padding: 0 .9rem; min-height: 44px; font-size: .8rem; }
+  .aksi-grup { margin: .35rem 0 .25rem; }
+  .gulung, .scroll { overflow: auto; }
+  .scroll { max-height: 320px; }
+  textarea { width: 100%; font-family: monospace; font-size: .8rem; box-sizing: border-box; }
   .muted { color: #64748b; font-size: .85rem; }
+  input[type="file"] { max-width: 100%; }
 </style>
 </head>
 <body>
-<h1>🧹 beberes</h1>
-<p class="muted">Periksa file Excel/CSV berantakan — tidak mengubah apa pun sampai kamu pilih bersihkan.</p>
+<header>
+  <h1>beberes</h1>
+  <p class="muted">Periksa file Excel/CSV berantakan. File tidak diubah sampai kamu pilih bersihkan.</p>
+</header>
 
+<main>
 <div class="kartu">
+  <label class="label" for="file">Berkas Excel/CSV</label>
   <input type="file" id="file" accept=".xlsx,.xlsm,.xls,.csv">
-  <p class="muted">Aturan YAML opsional (kosongkan untuk pemeriksaan umum):</p>
+  <label class="label" for="aturan">Aturan YAML opsional</label>
+  <p class="muted">Kosongkan untuk pemeriksaan umum.</p>
   <textarea id="aturan" rows="4" placeholder="versi: 1&#10;kolom:&#10;  No HP:&#10;    tipe: hp"></textarea>
   <p>
-    <button onclick="periksa()">Periksa</button>
-    <button onclick="bersihkan()" id="btnBersih" disabled>Bersihkan → unduh</button>
+    <button type="button" onclick="periksa()">Periksa</button>
+    <button type="button" onclick="bersihkan()" id="btnBersih" disabled>Bersihkan &amp; unduh</button>
   </p>
 </div>
 
-<div id="hasil"></div>
+<div id="hasil" aria-live="polite">
+  <p class="muted">Belum ada hasil. Pilih berkas lalu tekan Periksa.</p>
+</div>
+</main>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -57,16 +78,18 @@ function renderGrup(l, i) {
   const baris = l.grup.map(g => {
     const id = `${i}|${g.kunci}`;
     if (g.aman && !centang.has(id)) centang.add(id);  // default: aman dicentang
-    const contoh = (g.contoh || []).map(c => `${c.lama} → ${c.baru}`).join("; ");
+    const contoh = (g.contoh || []).map(c => `${esc(c.lama)} → ${esc(c.baru)}`).join("; ");
     return `<label style="display:block;margin:.25rem 0">
       <input type="checkbox" data-kunci="${esc(id)}" ${centang.has(id) ? "checked" : ""}>
-      <b>${esc(g.kode)}</b> ${esc(g.kolom)} — ${g.jumlah} sel${g.aman ? "" : " <span class='peringatan'>(perlu konfirmasi)</span>"}
-      <span class="muted">${esc(contoh)}</span>
+      <b>${esc(g.kode)}</b> ${esc(g.kolom)}: ${g.jumlah} sel${g.aman ? "" : " <span class='peringatan'>(perlu konfirmasi)</span>"}
+      <span class="muted">${contoh}</span>
     </label>`;
   }).join("");
-  return `<details><summary>Perbaikan per grup (${l.grup.length})
-    <button class="kecil" onclick="toggleGrup(this,true)">semua</button>
-    <button class="kecil" onclick="toggleGrup(this,false)">kosongkan</button></summary>${baris}</details>`;
+  return `<details><summary>Perbaikan per grup (${l.grup.length})</summary>
+    <div class="aksi-grup">
+      <button type="button" class="kecil" onclick="toggleGrup(this,true)">semua</button>
+      <button type="button" class="kecil" onclick="toggleGrup(this,false)">kosongkan</button>
+    </div>${baris}</details>`;
 }
 
 function toggleGrup(btn, nilai) {
@@ -77,11 +100,11 @@ function toggleGrup(btn, nilai) {
 function renderTemuan(lembar) {
   return lembar.map((l, i) => `
     <div class="kartu">
-      <b>Sheet '${l.sheet}'</b> — ${l.baris} baris, ${l.kolom} kolom —
-      skor ${l.skor} — ${l.temuan.length} temuan, ${l.perbaikan} perbaikan (${l.konfirmasi} butuh konfirmasi)
+      <b>Sheet '${esc(l.sheet)}'</b>: ${l.baris} baris, ${l.kolom} kolom,
+      skor ${l.skor}, ${l.temuan.length} temuan, ${l.perbaikan} perbaikan (${l.konfirmasi} butuh konfirmasi)
       ${renderGrup(l, i)}
-      ${l.temuan.length ? `<table><tr><th>Kode</th><th>Kolom</th><th>Tingkat</th><th>Pesan</th><th>Contoh</th></tr>` +
-        l.temuan.map(t => `<tr class="${t.tingkat}"><td>${t.kode}</td><td>${t.kolom}</td><td>${t.tingkat}</td><td>${t.pesan}</td><td>${(t.contoh||[]).join("; ")}</td></tr>`).join("") + `</table>` : "<p>✓ tidak ada masalah</p>"}
+      ${l.temuan.length ? `<div class="gulung"><table><tr><th>Kode</th><th>Kolom</th><th>Tingkat</th><th>Pesan</th><th>Contoh</th></tr>` +
+        l.temuan.map(t => `<tr class="${esc(t.tingkat)}"><td>${esc(t.kode)}</td><td>${esc(t.kolom)}</td><td>${esc(t.tingkat)}</td><td>${esc(t.pesan)}</td><td>${esc((t.contoh||[]).join("; "))}</td></tr>`).join("") + `</table></div>` : "<p>✓ tidak ada masalah</p>"}
     </div>`).join("");
 }
 
@@ -90,7 +113,7 @@ async function periksa() {
     $("hasil").innerHTML = `<p class="error">Pilih berkas dulu.</p>`;
     return;
   }
-  $("hasil").innerHTML = "memeriksa…";
+  $("hasil").innerHTML = "<p>memeriksa…</p>";
   $("btnBersih").disabled = true;
   try {
     const r = await kirim("/api/periksa");
@@ -100,7 +123,7 @@ async function periksa() {
     const nama = $("file").files[0] ? $("file").files[0].name : "";
     $("hasil").innerHTML =
       `<p class="muted">Berkas: ${esc(nama)}</p>` + renderTemuan(data.lembar);
-  } catch (e) { $("hasil").innerHTML = `<p class="error">${e.message}</p>`; }
+  } catch (e) { $("hasil").innerHTML = `<p class="error">${esc(e.message)}</p>`; }
 }
 
 async function bersihkan() {
@@ -127,13 +150,13 @@ async function bersihkan() {
        <td>${esc(p.kode)}</td><td>${esc(p.nilai_lama)} → ${esc(p.nilai_baru)}</td></tr>`
     ).join("");
     $("hasil").insertAdjacentHTML("beforeend",
-      `<div class="kartu">✓ ${data.perubahan} perubahan diterapkan —
-       <a href="${data.unduh}">unduh file bersih</a> ·
-       <a href="${data.audit_url}">unduh audit log</a><br>
+      `<div class="kartu">✓ ${data.perubahan} perubahan diterapkan:
+       <a href="${esc(data.unduh)}">unduh file bersih</a> ·
+       <a href="${esc(data.audit_url)}">unduh audit log</a><br>
        <details><summary>audit log (${data.perubahan} baris)</summary>
        <div class="scroll"><table><tr><th>Sheet</th><th>Sel</th><th>Kolom</th><th>Kode</th><th>Perubahan</th></tr>${isiAudit}</table>
        ${barisAudit.length > MAKS ? `<p class="muted">…dan ${barisAudit.length - MAKS} baris lagi (lihat file audit)</p>` : ""}</div></details></div>`);
-  } catch (e) { $("hasil").innerHTML += `<p class="error">${e.message}</p>`; }
+  } catch (e) { $("hasil").innerHTML += `<p class="error">${esc(e.message)}</p>`; }
   $("btnBersih").disabled = false;
 }
 </script>
