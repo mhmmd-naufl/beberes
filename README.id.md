@@ -29,6 +29,8 @@ Semua proses berjalan **lokal**. Tidak ada data yang dikirim keluar dari kompute
 
 ## Rencana penggunaan
 
+Pengguna Windows yang tidak mau repot buka terminal: unduh [`install.bat`](https://raw.githubusercontent.com/mhmmd-naufl/beberes/main/install.bat) lalu double-click. Skrip ini memeriksa Python, memasang `beberes`, dan membuka UI di browser. Di dalam UI ada tautan "unduh contoh" kalau belum punya file berantakan. Isinya data sintetis khusus untuk coba-coba.
+
 ```bash
 pip install beberes
 

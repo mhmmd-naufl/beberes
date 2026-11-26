@@ -30,6 +30,8 @@ Everything runs **locally**. No data leaves your computer.
 
 ## Usage
 
+Windows users who would rather not touch a terminal: download [`install.bat`](https://raw.githubusercontent.com/mhmmd-naufl/beberes/main/install.bat) and double-click it. It checks for Python, installs `beberes`, and opens the UI in your browser. Inside the UI, use the "download sample" link if you don't have a messy file handy. It's synthetic data made for testing.
+
 ```bash
 pip install beberes
 
