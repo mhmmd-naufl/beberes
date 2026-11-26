@@ -5,7 +5,7 @@
 
 🇮🇩 [Versi Bahasa Indonesia](README.id.md)
 
-**Status:** v0.3.2 — dedupe, undo, mode konfirmasi, benchmark akurasi, wilayah resmi
+**Status:** v0.5.0 — local browser UI (`beberes ui`), dedupe, undo, mode konfirmasi, benchmark akurasi, wilayah resmi
 
 ![demo](docs/demo.gif)
 
@@ -49,7 +49,7 @@ beberes undo data_clean.xlsx --log data_clean.audit.jsonl --out restored.xlsx
 # message language: id or en (defaults to system language)
 beberes check data.xlsx --lang en
 
-# (v0.5) local browser UI
+# local browser UI
 beberes ui
 ```
 

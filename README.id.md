@@ -5,7 +5,7 @@
 
 🇬🇧 [English version](README.md)
 
-**Status:** v0.3.2 — dedupe, undo, mode konfirmasi, benchmark akurasi, wilayah resmi
+**Status:** v0.5.0 — UI lokal di browser (`beberes ui`), dedupe, undo, mode konfirmasi, benchmark akurasi, wilayah resmi
 
 ![demo](docs/demo.gif)
 
@@ -48,7 +48,7 @@ beberes urungkan data_bersih.xlsx --log data_bersih.audit.jsonl --keluar dipulih
 # bahasa pesan/laporan: id atau en (default mengikuti bahasa sistem)
 beberes periksa data.xlsx --bahasa en
 
-# (v0.5) antarmuka lokal di browser
+# antarmuka lokal di browser
 beberes ui
 ```
 

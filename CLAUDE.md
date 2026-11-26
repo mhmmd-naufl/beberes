@@ -46,12 +46,11 @@ beberes --help               # coba CLI
 - Commit kecil dengan pesan jelas (mis. `feat(detectors): deteksi format tanggal campur (TGL001)`).
 
 ## Status saat ini
-Rilis terakhir: **v0.3.2** (PyPI). v0.5 UI sedang dikerjakan di main (belum dirilis).
-Versi PyPI: 0.0.1 s/d 0.3.2. 110 test hijau, ruff bersih, CI hijau.
+Rilis terakhir: **v0.5.0** (PyPI, tag `v0.5.0`). `beberes versi` membaca versi dari metadata paket. 115 test hijau, ruff bersih, CI hijau.
 
-v0.5 UI (sedang berjalan):
-- `beberes ui` -> FastAPI + halaman `src/beberes/ui/index.html` (vanilla JS, React via CDN menyusul)
-- Endpoint: GET /, POST /api/periksa, POST /api/bersihkan, GET /unduh/{file}
+v0.5 UI (selesai, dirilis v0.5.0):
+- `beberes ui` -> FastAPI + satu halaman `src/beberes/ui/index.html` (vanilla JS, i18n id/en, anti-slop cleaned)
+- Endpoint: GET /, POST /api/periksa, POST /api/bersihkan, POST /api/urungkan, GET /unduh/{file}
 - Deps baru: fastapi, uvicorn, python-multipart; dev: httpx2 (wajib untuk TestClient)
 - Selesai: upload->periksa->bersihkan->unduh+audit; centang perbaikan per grup (`grup_aktif`, ambigu = konfirmasi eksplisit); audit `.audit.jsonl` bisa diunduh + tabel; tombol **Urungkan** (`POST /api/urungkan`, pakai nama file sesi, tanpa upload ulang); UI bilingual id/en (toggle ID/EN, localStorage); semua string UI lewat `t()`; lolos audit anti-slop 12 temuan (`anti-slop/audit-001-2026-11-26.md`, untracked)
 - Belum: tes user nyata (docs/05); before/after diff per sel hanya contoh 3/grup + tabel audit pasca-bersih

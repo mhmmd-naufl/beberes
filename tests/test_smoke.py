@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 from typer.testing import CliRunner
@@ -11,7 +12,7 @@ runner = CliRunner()
 def test_versi():
     hasil = runner.invoke(app, ["versi", "--lang", "en"])
     assert hasil.exit_code == 0
-    assert "0.1.0" in hasil.output
+    assert re.search(r"\d+\.\d+\.\d+", hasil.output)
 
 
 def test_alias_dua_bahasa(tmp_path: Path):

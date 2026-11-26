@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "beberes"
-version = "0.3.2"
+version = "0.5.0"
 description = "Tidy up messy Indonesian spreadsheets. Data-quality CLI for Excel/CSV — NIK, NPWP, Rupiah, wilayah, gelar. Dry-run by default, audit log + undo."
 readme = "README.md"
 requires-python = ">=3.10"

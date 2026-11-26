@@ -2,13 +2,22 @@
 
 Mengikuti [Keep a Changelog](https://keepachangelog.com/) dan [Semantic Versioning](https://semver.org/).
 
-## [Belum dirilis]
+## [0.5.0] - 2026-11-26
+
+UI lokal di browser (`beberes ui`) — FastAPI + satu halaman HTML.
 
 ### Ditambahkan
-- `beberes ui`: UI lokal FastAPI + React — upload -> periksa -> bersihkan -> unduh + audit
-- UI: centang perbaikan per grup (kode+kolom+aturan); grup ambigu perlu centang eksplisit (konfirmasi)
+- `beberes ui`: UI lokal FastAPI — upload -> periksa -> centang perbaikan per grup -> bersihkan -> unduh + audit
+- UI: centang perbaikan per grup (kode+kolom+aturan+tingkat aman); grup ambigu perlu centang eksplisit (konfirmasi, D-009)
 - UI: audit log `.audit.jsonl` bisa diunduh + ditampilkan sebagai tabel; nama file unduhan unik
-- Dependency baru: fastapi, uvicorn, python-multipart (untuk UI lokal v0.5)
+- UI: tombol **Urungkan** (`POST /api/urungkan`) memulihkan nilai semula dari audit log tanpa upload ulang
+- UI bilingual id/en (toggle ID/EN, tersimpan di localStorage); semua teks UI lewat kamus `I18N` + `t()`
+- UI lolos audit anti-slop: 12 temuan diperbaiki (em dash, label form, viewport, landmark, escaping konsisten, tap target, dsb — `anti-slop/audit-001-2026-11-26.md`)
+- `beberes versi` kini membaca versi dari metadata paket (sebelumnya `__version__` hard-code dan basi)
+- Dependency baru: fastapi, uvicorn, python-multipart (untuk UI lokal)
+
+### Diperbaiki
+- `dedupe`: fuzzy matching dioptimasi (blocking huruf+bucket panjang, maks grup 200) — BANUA 15 sheet ~20rb baris kini ~1 menit untuk periksa (sebelumnya jauh lebih lama)
 
 ## [0.3.2] - 2026-11-24
 
