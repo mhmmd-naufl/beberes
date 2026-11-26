@@ -1,5 +1,7 @@
 # beberes
 
+<img src="assets/icons/beberes-mark.svg" alt="" width="64" height="64">
+
 > *Tidy up messy Indonesian spreadsheets.*
 > Engine kualitas data untuk file Excel/CSV yang berantakan, dibuat untuk kebiasaan data Indonesia.
 
