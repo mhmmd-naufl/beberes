@@ -61,7 +61,7 @@ Cerita demo: "admin non-teknis rapikan data lewat browser, tanpa terminal".
 - [x] `beberes ui`: FastAPI + React di localhost (React via CDN, Vite menyusul)
 - [x] Upload, tampilan temuan per sheet, skor kualitas
 - [x] Unduh hasil + audit log (semua fix aman otomatis diterapkan)
-- [ ] Centang perbaikan individual / mode konfirmasi di UI
+- [x] Centang perbaikan per grup / mode konfirmasi di UI (`grup_aktif`; grup ambigu default mati)
 - [ ] Tes dengan 2-3 user nyata, catat di dokumen 05
 
 ## v1.0: Ekosistem

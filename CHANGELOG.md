@@ -6,6 +6,8 @@ Mengikuti [Keep a Changelog](https://keepachangelog.com/) dan [Semantic Versioni
 
 ### Ditambahkan
 - `beberes ui`: UI lokal FastAPI + React — upload -> periksa -> bersihkan -> unduh + audit
+- UI: centang perbaikan per grup (kode+kolom+aturan); grup ambigu perlu centang eksplisit (konfirmasi)
+- UI: audit log `.audit.jsonl` bisa diunduh + ditampilkan sebagai tabel; nama file unduhan unik
 - Dependency baru: fastapi, uvicorn, python-multipart (untuk UI lokal v0.5)
 
 ## [0.3.2] - 2026-11-24
