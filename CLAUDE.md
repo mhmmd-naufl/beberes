@@ -24,6 +24,7 @@ Tagline: "Tidy up messy Indonesian spreadsheets."
 7. **Jangan menebak aturan domain.** Struktur NIK/NPWP, kode wilayah, format plat: kalau tidak yakin, tulis `TODO: verifikasi sumber` dan tanya. Jangan mengarang.
 8. **Jangan menambah dependensi** tanpa bilang alasannya. Pastikan paketnya benar-benar ada di PyPI.
 9. **Jangan memperluas scope** di luar versi aktif di ROADMAP.md.
+10. **Commit & push:** pesan commit harus bersih. DILARANG menambahkan trailer `Generated with Devin`, `Co-Authored-By: Devin`, atau atribusi AI lain; commit hanya menampilkan akun pemilik proyek sebagai kontributor. Jangan `git push` tanpa izin eksplisit dari user di sesi itu.
 
 ## Cara kerja yang diharapkan
 - Kerjakan **satu hal kecil per sesi/perubahan**. Jelaskan rencana singkat sebelum menulis kode.
