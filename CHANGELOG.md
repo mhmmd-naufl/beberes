@@ -2,6 +2,15 @@
 
 Mengikuti [Keep a Changelog](https://keepachangelog.com/) dan [Semantic Versioning](https://semver.org/).
 
+## [0.5.2] - 2026-11-26
+
+Build desktop via PyInstaller.
+
+### Ditambahkan
+- `beberes-ui.exe` (Windows, onefile ~27MB): double-click -> server + browser otomatis, tanpa install Python. Dibangun CI per tag dan dilampirkan ke GitHub Release (`.github/workflows/exe.yml`)
+- Launcher `scripts/beberes_ui.py` (port bebas) + `scripts/build_exe.bat` untuk build lokal
+- Aset non-Python (`ui/`, `data/wilayah.json`) kini di-resolve via `sys._MEIPASS` saat frozen, jadi aman untuk exe
+
 ## [0.5.1] - 2026-11-26
 
 Polish onboarding untuk user awam.

@@ -16,7 +16,7 @@ Everything runs **locally**. No data leaves your computer.
 
 🇮🇩 [Versi Bahasa Indonesia](README.id.md)
 
-**Status:** v0.5.1 — local browser UI (`beberes ui`), dedupe, undo, mode konfirmasi, benchmark akurasi, wilayah resmi
+**Status:** v0.5.2 — local browser UI (`beberes ui`), dedupe, undo, mode konfirmasi, benchmark akurasi, wilayah resmi
 
 </div>
 
@@ -39,7 +39,9 @@ read file -> profile columns -> detect issues -> propose fixes -> apply -> repor
 
 ## Usage
 
-Windows users who would rather not touch a terminal: download [`install.bat`](https://raw.githubusercontent.com/mhmmd-naufl/beberes/main/install.bat) and double-click it. It checks for Python, installs `beberes`, and opens the UI in your browser. Inside the UI, use the "download sample" link if you don't have a messy file handy. It's synthetic data made for testing.
+Windows users who would rather not install anything: download `beberes-ui.exe` from the [latest GitHub Release](https://github.com/mhmmd-naufl/beberes/releases/latest) and double-click it. No Python needed.
+
+Prefer a package install? `pip install beberes` then run `install.bat` (or `beberes ui` in a terminal). Inside the UI, use the "download sample" link if you don't have a messy file handy. It's synthetic data made for testing.
 
 ```bash
 pip install beberes

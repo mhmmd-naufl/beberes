@@ -16,7 +16,7 @@ Semua proses berjalan **lokal**. Tidak ada data yang dikirim keluar dari kompute
 
 🇬🇧 [English version](README.md)
 
-**Status:** v0.5.1 — UI lokal di browser (`beberes ui`), dedupe, undo, mode konfirmasi, benchmark akurasi, wilayah resmi
+**Status:** v0.5.2 — UI lokal di browser (`beberes ui`), dedupe, undo, mode konfirmasi, benchmark akurasi, wilayah resmi
 
 </div>
 
@@ -38,7 +38,9 @@ baca file -> profil kolom -> deteksi masalah -> usul perbaikan -> terapkan -> la
 
 ## Rencana penggunaan
 
-Pengguna Windows yang tidak mau repot buka terminal: unduh [`install.bat`](https://raw.githubusercontent.com/mhmmd-naufl/beberes/main/install.bat) lalu double-click. Skrip ini memeriksa Python, memasang `beberes`, dan membuka UI di browser. Di dalam UI ada tautan "unduh contoh" kalau belum punya file berantakan. Isinya data sintetis khusus untuk coba-coba.
+Pengguna Windows yang tidak mau instal apa pun: unduh `beberes-ui.exe` dari [GitHub Release terbaru](https://github.com/mhmmd-naufl/beberes/releases/latest) lalu double-click. Tidak perlu Python.
+
+Kalau mau lewat paket: `pip install beberes` lalu jalankan `install.bat` (atau `beberes ui` di terminal). Di dalam UI ada tautan "unduh contoh" kalau belum punya file berantakan. Isinya data sintetis khusus untuk coba-coba.
 
 ```bash
 pip install beberes
