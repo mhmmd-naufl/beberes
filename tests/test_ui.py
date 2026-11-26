@@ -44,6 +44,13 @@ def test_index(client):
     assert "beberes" in r.text
 
 
+def test_favicon(client):
+    c, _ = client
+    r = c.get("/favicon.svg")
+    assert r.status_code == 200
+    assert r.headers["content-type"] == "image/svg+xml"
+
+
 def test_periksa(client):
     c, f = client
     r = _unggah(c, f)

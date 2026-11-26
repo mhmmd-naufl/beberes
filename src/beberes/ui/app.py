@@ -23,6 +23,7 @@ from ..rules import muat as muat_aturan
 from ..rules import periksa as periksa_aturan
 
 _TEMPLATE = Path(__file__).parent / "index.html"
+_ICONS = Path(__file__).parent / "icons"
 
 
 def _proses_lembar(lembar: Lembar, aturan) -> tuple[list, list[Perbaikan], int]:
@@ -157,6 +158,14 @@ def buat_app() -> FastAPI:
     @app.get("/", response_class=HTMLResponse)
     def index():
         return _TEMPLATE.read_text(encoding="utf-8")
+
+    @app.get("/favicon.svg")
+    def favicon_svg():
+        return FileResponse(_ICONS / "favicon.svg", media_type="image/svg+xml")
+
+    @app.get("/favicon-32.png")
+    def favicon_png():
+        return FileResponse(_ICONS / "favicon-32.png", media_type="image/png")
 
     @app.post("/api/periksa")
     async def periksa(file: UploadFile = File(...), aturan: str | None = Form(None)):
