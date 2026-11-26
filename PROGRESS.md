@@ -16,13 +16,14 @@
   (index, favicon, contoh.xlsx, /api/periksa semua 200). Perlu `--add-data`
   untuk `ui/` + `data/` dan resolver `sys._MEIPASS` di `ui/app.py` +
   `validators/wilayah.py`. Build: `scripts/build_exe.bat`
+- **v0.5.2 dirilis**: PyPI 0.5.2 + GitHub Release dengan `beberes-ui.exe`
+  (user awam bisa download tanpa install Python)
 - **CI exe jalan** (`.github/workflows/exe.yml`): tag `v*` auto-build +
   attach exe ke GitHub Release; `workflow_dispatch` upload artifact.
   Tervalidasi via dispatch manual (artifact 18MB, 1m15s)
 
 ## Berikutnya
 
-- Exe rilis pertama akan menyertakan `beberes-ui.exe` di GitHub Release
-  v0.5.2+; masih console (pywebview menyusul, D-014)
+- Exe masih console (pywebview menyusul, D-014); build macOS/Linux belum ada
 - Posting draft sosmed, kumpulkan respons form -> docs/05
 - Kandidat v0.6: heuristik TGL002, partial undo
