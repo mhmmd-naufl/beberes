@@ -53,8 +53,8 @@ v0.5 UI (sedang berjalan):
 - `beberes ui` -> FastAPI + halaman `src/beberes/ui/index.html` (vanilla JS, React via CDN menyusul)
 - Endpoint: GET /, POST /api/periksa, POST /api/bersihkan, GET /unduh/{file}
 - Deps baru: fastapi, uvicorn, python-multipart; dev: httpx2 (wajib untuk TestClient)
-- Selesai: upload->periksa->bersihkan->unduh+audit; test_ui.py generate fixture sendiri (data_uji TIDAK ikut repo — gitignored!); centang perbaikan per grup di UI (`grup_aktif`, grup ambigu = perlu konfirmasi eksplisit)
-- Belum: before/after diff, tes user nyata (docs/05)
+- Selesai: upload->periksa->bersihkan->unduh+audit; centang perbaikan per grup (`grup_aktif`, ambigu = konfirmasi eksplisit); audit `.audit.jsonl` bisa diunduh + tabel; tombol **Urungkan** (`POST /api/urungkan`, pakai nama file sesi, tanpa upload ulang); UI bilingual id/en (toggle ID/EN, localStorage); semua string UI lewat `t()`; lolos audit anti-slop 12 temuan (`anti-slop/audit-001-2026-11-26.md`, untracked)
+- Belum: tes user nyata (docs/05); before/after diff per sel hanya contoh 3/grup + tabel audit pasca-bersih
 - Catatan perf: dedupe fuzzy sudah dioptimasi (blokir huruf+bucket panjang, maks grup 200) — BANUA 15 sheet ~20rb baris butuh ~1 menit untuk periksa
 - Server dev: `beberes ui --port 8000`
 

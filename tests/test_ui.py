@@ -59,6 +59,30 @@ def test_bersihkan_dan_unduh(client):
     assert r2.content[:2] == b"PK"  # file xlsx = zip
 
 
+def test_urungkan_setelah_bersihkan(client):
+    from io import BytesIO
+
+    from openpyxl import load_workbook
+
+    c, f = client
+    data = _bersihkan(c, f).json()
+    r = c.post(
+        "/api/urungkan",
+        data={
+            "berkas": data["unduh"].split("/")[-1],
+            "audit": data["audit_url"].split("/")[-1],
+        },
+    )
+    assert r.status_code == 200
+    unduh = r.json()["unduh"]
+    isi = c.get(unduh).content
+    assert isi[:2] == b"PK"
+    wb = load_workbook(BytesIO(isi))
+    ws = wb.active
+    # nilai asli "  Ani  " (dengan spasi) harus kembali setelah undo
+    assert ws.cell(row=2, column=1).value == "  Ani  "
+
+
 def test_audit_log_bisa_diunduh(client):
     c, f = client
     data = _bersihkan(c, f).json()

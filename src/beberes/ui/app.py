@@ -15,7 +15,7 @@ from ..detectors import jalankan as deteksi_semua
 from ..fixers import usulkan_semua
 from ..io import baca_berkas, simpan
 from ..profiling import hitung_skor, profil_lbr
-from ..report import terapkan, tulis_audit
+from ..report import terapkan, tulis_audit, urungkan
 from ..rules import muat as muat_aturan
 from ..rules import periksa as periksa_aturan
 
@@ -191,6 +191,34 @@ def buat_app() -> FastAPI:
             raise HTTPException(400, f"Gagal membersihkan: {e}") from e
         finally:
             path.unlink(missing_ok=True)
+
+    @app.post("/api/urungkan")
+    async def urungkan_endpoint(
+        berkas: str = Form(...), audit: str = Form(...)
+    ):
+        """Kembalikan file hasil bersih ke nilai semula pakai audit log.
+
+        `berkas` dan `audit` adalah nama file di folder unduhan sesi ini
+        (dikembalikan /api/bersihkan), jadi tidak perlu upload ulang.
+        """
+        folder = _folder_unduhan()
+        asal = folder / berkas
+        log = folder / audit
+        for f in (asal, log):
+            if not f.exists() or f.parent != folder:
+                raise HTTPException(404, "File tidak ditemukan")
+        try:
+            lembar_list = urungkan(asal, log)
+        except ValueError as e:
+            raise HTTPException(400, f"Audit log rusak: {e}") from e
+        suf = ".csv" if asal.suffix.lower() == ".csv" else ".xlsx"
+        tujuan = folder / f"{asal.stem}_urung{suf}"
+        n = 1
+        while tujuan.exists():
+            tujuan = folder / f"{asal.stem}_urung_{n}{suf}"
+            n += 1
+        simpan(lembar_list, tujuan)
+        return {"unduh": f"/unduh/{tujuan.name}"}
 
     @app.get("/unduh/{nama}")
     def unduh(nama: str):
