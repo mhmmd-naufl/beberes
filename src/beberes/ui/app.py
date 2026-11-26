@@ -6,6 +6,7 @@ menerjemahkan HTTP <-> core.
 """
 
 import json
+import sys
 import tempfile
 from pathlib import Path
 
@@ -22,9 +23,17 @@ from ..report import terapkan, tulis_audit, urungkan
 from ..rules import muat as muat_aturan
 from ..rules import periksa as periksa_aturan
 
-_TEMPLATE = Path(__file__).parent / "index.html"
-_ICONS = Path(__file__).parent / "icons"
-_DIR = Path(__file__).parent
+
+def _ui_dir() -> Path:
+    """Folder aset UI: source checkout atau bundle PyInstaller."""
+    if getattr(sys, "frozen", False):
+        return Path(sys._MEIPASS) / "beberes" / "ui"
+    return Path(__file__).parent
+
+
+_TEMPLATE = _ui_dir() / "index.html"
+_ICONS = _ui_dir() / "icons"
+_DIR = _ui_dir()
 _XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 

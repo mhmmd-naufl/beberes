@@ -46,16 +46,19 @@ beberes --help               # coba CLI
 - Commit kecil dengan pesan jelas (mis. `feat(detectors): deteksi format tanggal campur (TGL001)`).
 
 ## Status saat ini
-Rilis terakhir: **v0.5.0** (PyPI, tag `v0.5.0`). `beberes versi` membaca versi dari metadata paket. CI hijau.
+Rilis terakhir: **v0.5.1** (PyPI, tag `v0.5.1`). `beberes versi` membaca versi dari metadata paket. CI hijau.
+Log kerja per sesi: `PROGRESS.md`.
 
-v0.5 UI (selesai, dirilis v0.5.0):
-- `beberes ui` -> FastAPI + satu halaman `src/beberes/ui/index.html` (vanilla JS, i18n id/en, anti-slop cleaned)
+v0.5 UI (selesai, dirilis v0.5.0 + polish v0.5.1):
+- `beberes ui` -> FastAPI + satu halaman `src/beberes/ui/index.html` (vanilla JS, i18n id/en, anti-slop cleaned); auto-buka browser; `/contoh.xlsx` file contoh data sintetis; favicon/ikon teal (mark-c)
 - Endpoint: GET /, POST /api/periksa, POST /api/bersihkan, POST /api/urungkan, GET /unduh/{file}
 - Deps baru: fastapi, uvicorn, python-multipart; dev: httpx2 (wajib untuk TestClient)
 - Selesai: upload->periksa->bersihkan->unduh+audit; centang perbaikan per grup di UI (`grup_aktif`, ambigu = konfirmasi eksplisit) + API pilihan per sel (`terpilih` indeks / `detail` perbaikan, deterministik); `terapkan()` punya `abaikan_aman_otomatis` untuk konfirmasi eksplisit; field `diff` sebelum→sesudah di respons bersihkan; audit `.audit.jsonl` bisa diunduh + tabel; tombol **Urungkan** (`POST /api/urungkan`, pakai nama file sesi); UI bilingual id/en; semua string UI lewat `t()`; lolos audit anti-slop 12 temuan (`anti-slop/audit-001-2026-11-26.md`); test_ui.py generate fixture sendiri (data_uji TIDAK ikut repo — gitignored!)
 - Belum: tes user nyata (docs/05); diff per sel di UI hanya via tabel audit (maks 200 baris tampil)
 - Catatan perf: dedupe fuzzy sudah dioptimasi (blokir huruf+bucket panjang, maks grup 200) — BANUA 15 sheet ~20rb baris butuh ~1 menit untuk periksa; `/api/periksa` mengembalikan `detail` per sel (bisa besar di file raksasa — pantau bila lambat)
 - Server dev: `beberes ui --port 8000`
+- Exe: `scripts/build_exe.bat` -> `dist/beberes-ui.exe` (PyInstaller onefile, ~27MB, console). Launcher `scripts/beberes_ui.py` (port bebas + auto-buka browser). Aset non-py di-resolve via `sys._MEIPASS` bila frozen (`_ui_dir()` di ui/app.py, `_data_file()` di validators/wilayah.py) — pola ini wajib untuk file data apa pun yang dibaca via Path(__file__).
+- `install.bat` (root repo): installer Windows non-teknis; pakai `python -m beberes` (`__main__.py`)
 
 Sudah ada (semua di `src/beberes/`):
 - `io/` reader .xlsx/.xlsm/.xls/.csv (baris+kolom hantu dibuang), writer .xlsx/.csv

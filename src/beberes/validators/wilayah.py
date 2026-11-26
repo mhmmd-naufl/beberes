@@ -15,15 +15,21 @@ Kode masalah:
 import difflib
 import json
 import re
+import sys
 from functools import lru_cache
 from pathlib import Path
 
-_DATA = Path(__file__).resolve().parent.parent / "data" / "wilayah.json"
+
+def _data_file() -> Path:
+    """Path wilayah.json: source checkout atau bundle PyInstaller."""
+    if getattr(sys, "frozen", False):
+        return Path(sys._MEIPASS) / "beberes" / "data" / "wilayah.json"
+    return Path(__file__).resolve().parent.parent / "data" / "wilayah.json"
 
 
 @lru_cache(maxsize=1)
 def _mentah() -> dict:
-    return json.loads(_DATA.read_text(encoding="utf-8"))
+    return json.loads(_data_file().read_text(encoding="utf-8"))
 
 
 @lru_cache(maxsize=1)
