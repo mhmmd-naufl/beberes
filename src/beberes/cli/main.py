@@ -228,10 +228,16 @@ def urungkan_cmd(
 
 def ui(port: int = typer.Option(8000, "--port", help="Port server | Server port")) -> None:
     """Buka UI lokal di browser  |  Open local UI in browser."""
+    import threading
+    import webbrowser
+
     import uvicorn
 
     from beberes.ui.app import buat_app
-    typer.echo(t("ui_mulai", url=f"http://localhost:{port}"))
+
+    url = f"http://localhost:{port}"
+    typer.echo(t("ui_mulai", url=url))
+    threading.Timer(1.0, lambda: webbrowser.open(url)).start()
     uvicorn.run(buat_app(), host="127.0.0.1", port=port)
 
 
