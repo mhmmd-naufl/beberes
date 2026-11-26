@@ -2,6 +2,17 @@
 
 Mengikuti [Keep a Changelog](https://keepachangelog.com/) dan [Semantic Versioning](https://semver.org/).
 
+## [0.5.1] - 2026-11-26
+
+Polish onboarding untuk user awam.
+
+### Ditambahkan
+- `beberes ui` otomatis membuka browser setelah server siap
+- UI: tautan "unduh contoh" (`/contoh.xlsx`, data sintetis 40 baris) untuk yang belum punya file
+- `install.bat` di root repo: panduan Windows satu-klik (cek Python -> pasang -> jalankan UI)
+- `python -m beberes` kini didukung (`__main__.py`), dipakai `install.bat` agar tidak bergantung PATH
+- Ikon/favicon `beberes` (mark-c, tile teal) di UI, README, dan tab browser
+
 ## [0.5.0] - 2026-11-26
 
 UI lokal di browser (`beberes ui`) — FastAPI + satu halaman HTML.
