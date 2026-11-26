@@ -99,4 +99,4 @@ Detailed docs are currently written in Indonesian (English summaries come with v
 
 ## License
 
-[MIT](LICENSE). See decision D-007.
+[MIT](LICENSE)

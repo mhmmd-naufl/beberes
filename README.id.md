@@ -87,4 +87,4 @@ beberes ui
 
 ## Lisensi
 
-[MIT](LICENSE). Lihat keputusan D-007.
+[MIT](LICENSE)
