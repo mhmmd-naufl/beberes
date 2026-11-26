@@ -16,10 +16,13 @@
   (index, favicon, contoh.xlsx, /api/periksa semua 200). Perlu `--add-data`
   untuk `ui/` + `data/` dan resolver `sys._MEIPASS` di `ui/app.py` +
   `validators/wilayah.py`. Build: `scripts/build_exe.bat`
+- **CI exe jalan** (`.github/workflows/exe.yml`): tag `v*` auto-build +
+  attach exe ke GitHub Release; `workflow_dispatch` upload artifact.
+  Tervalidasi via dispatch manual (artifact 18MB, 1m15s)
 
 ## Berikutnya
 
-- Exe masih console + belum ada CI build; kandidat: GitHub Actions build
-  per-OS + upload ke Releases, lalu pywebview (D-014) di atasnya
+- Exe rilis pertama akan menyertakan `beberes-ui.exe` di GitHub Release
+  v0.5.2+; masih console (pywebview menyusul, D-014)
 - Posting draft sosmed, kumpulkan respons form -> docs/05
 - Kandidat v0.6: heuristik TGL002, partial undo
