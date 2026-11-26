@@ -22,6 +22,26 @@ from ..rules import periksa as periksa_aturan
 _TEMPLATE = Path(__file__).parent / "index.html"
 
 
+def _kunci_grup(p) -> str:
+    """Kunci unik satu grup perbaikan (kode+kolom+aturan+tingkat aman)."""
+    return f"{p.kode}|{p.kolom}|{p.aturan}|{int(p.aman_otomatis)}"
+
+
+def _grup_perbaikan(perbaikan) -> list[dict]:
+    """Kelompokkan Perbaikan per kunci; ringkas untuk UI (maks 3 contoh)."""
+    grup: dict[str, dict] = {}
+    for p in perbaikan:
+        k = _kunci_grup(p)
+        g = grup.setdefault(k, {
+            "kunci": k, "kode": p.kode, "kolom": p.kolom, "aturan": p.aturan,
+            "aman": p.aman_otomatis, "jumlah": 0, "contoh": [],
+        })
+        g["jumlah"] += 1
+        if len(g["contoh"]) < 3:
+            g["contoh"].append({"lama": str(p.nilai_lama), "baru": str(p.nilai_baru)})
+    return list(grup.values())
+
+
 def _proses_berkas(path: Path, aturan=None):
     """Kembalikan (lembar_list, ringkasan per sheet)."""
     ringkasan = []
@@ -44,8 +64,23 @@ def _proses_berkas(path: Path, aturan=None):
             ],
             "perbaikan": len(perbaikan),
             "konfirmasi": sum(1 for p in perbaikan if not p.aman_otomatis),
+            "grup": _grup_perbaikan(perbaikan),
         })
     return ringkasan
+
+
+def _filter_aktif(perbaikan, aktif: set[str]):
+    """Saring perbaikan: hanya grup yang dicentang user yang diterapkan.
+
+    Mencentang grup aman_otomatis=False berarti konfirmasi eksplisit,
+    jadi ditandai aman agar diterapkan (D-009: tetap lewat persetujuan user).
+    """
+    hasil = []
+    for p in perbaikan:
+        if _kunci_grup(p) in aktif:
+            p.aman_otomatis = True
+            hasil.append(p)
+    return hasil
 
 
 def buat_app() -> FastAPI:
@@ -77,7 +112,11 @@ def buat_app() -> FastAPI:
             path.unlink(missing_ok=True)
 
     @app.post("/api/bersihkan")
-    async def bersihkan(file: UploadFile = File(...), aturan: str | None = Form(None)):
+    async def bersihkan(
+        file: UploadFile = File(...),
+        aturan: str | None = Form(None),
+        grup_aktif: str | None = Form(None),
+    ):
         with tempfile.NamedTemporaryFile(
             suffix=Path(file.filename or "data.xlsx").suffix, delete=False
         ) as tmp:
@@ -92,14 +131,32 @@ def buat_app() -> FastAPI:
                     yf.write(aturan)
                     at = muat_aturan(Path(yf.name))
             lembar_list = baca_berkas(path)
+            # grup_aktif: JSON ["0|KODE|kolom|aturan|1", ...] — centang user.
+            # None = perilaku lama (semua perbaikan aman otomatis diterapkan).
+            aktif_per_sheet: list[set[str]] = []
+            if grup_aktif is not None:
+                aktif = json.loads(grup_aktif)
+                for entri in aktif:
+                    i, _, kunci = entri.partition("|")
+                    while len(aktif_per_sheet) <= int(i):
+                        aktif_per_sheet.append(set())
+                    aktif_per_sheet[int(i)].add(kunci)
+
             semua_perubahan = []
             keluar_lembar = []
-            for lembar in lembar_list:
+            for idx, lembar in enumerate(lembar_list):
                 profil = profil_lbr(lembar)
                 temuan = deteksi_semua(lembar, profil)
                 if at is not None:
                     temuan.extend(periksa_aturan(lembar, at))
                 perbaikan = usulkan_semua(temuan, lembar)
+                if grup_aktif is not None:
+                    aktif = (
+                        aktif_per_sheet[idx]
+                        if idx < len(aktif_per_sheet)
+                        else set()
+                    )
+                    perbaikan = _filter_aktif(perbaikan, aktif)
                 baru, perubahan = terapkan(lembar, perbaikan)
                 keluar_lembar.append(baru)
                 semua_perubahan.extend(perubahan)
