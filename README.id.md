@@ -87,4 +87,4 @@ beberes ui
 
 ## Lisensi
 
-Belum ditentukan (lihat keputusan D-007).
+[MIT](LICENSE). Lihat keputusan D-007.
