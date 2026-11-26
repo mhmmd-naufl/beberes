@@ -28,6 +28,15 @@ def _unggah(client, path):
         )
 
 
+def _bersihkan(client, path, **form):
+    with open(path, "rb") as fp:
+        return client.post(
+            "/api/bersihkan",
+            files={"file": ("data.xlsx", fp, "application/octet-stream")},
+            data=form,
+        )
+
+
 def test_index(client):
     c, _ = client
     r = c.get("/")
@@ -46,17 +55,66 @@ def test_periksa(client):
 
 def test_bersihkan_dan_unduh(client):
     c, f = client
-    with open(f, "rb") as fp:
-        r = c.post(
-            "/api/bersihkan",
-            files={"file": ("data.xlsx", fp, "application/octet-stream")},
-        )
+    r = _bersihkan(c, f)
     assert r.status_code == 200
     data = r.json()
     assert data["perubahan"] > 0
+    assert data["diff"] and data["diff"][0]["nilai_lama"] != data["diff"][0]["nilai_baru"]
     r2 = c.get(data["unduh"])
     assert r2.status_code == 200
     assert r2.content[:2] == b"PK"  # file xlsx = zip
+
+
+def test_periksa_mengembalikan_detail_perbaikan(client):
+    c, f = client
+    data = _unggah(c, f).json()
+    detail = data["lembar"][0]["detail"]
+    assert detail, "harus ada usulan perbaikan untuk '  Ani  '"
+    p = detail[0]
+    for k in ("id", "kode", "sel", "nilai_lama", "nilai_baru", "aman_otomatis"):
+        assert k in p
+
+
+def test_periksa_mengembalikan_grup(client):
+    c, f = client
+    data = _unggah(c, f).json()
+    grup = data["lembar"][0]["grup"]
+    assert grup, "fixture '  Ani  ' seharusnya menghasilkan perbaikan"
+    assert all("kunci" in g and "jumlah" in g for g in grup)
+
+
+def test_bersihkan_semua_centang_dikosongkan(client):
+    c, f = client
+    r = _bersihkan(c, f, grup_aktif="[]")
+    assert r.status_code == 200
+    assert r.json()["perubahan"] == 0
+
+
+def test_bersihkan_hanya_grup_tercentang(client):
+    c, f = client
+    data = _unggah(c, f).json()
+    kunci = [f"0|{g['kunci']}" for g in data["lembar"][0]["grup"] if g["aman"]]
+    assert kunci
+    r = _bersihkan(c, f, grup_aktif=json.dumps(kunci))
+    assert r.status_code == 200
+    n_semua = _bersihkan(c, f).json()["perubahan"]
+    assert r.json()["perubahan"] == n_semua
+
+
+def test_bersihkan_terpilih_subset(client):
+    c, f = client
+    detail = _unggah(c, f).json()["lembar"][0]["detail"]
+    # hanya terapkan perbaikan pertama
+    r = _bersihkan(c, f, terpilih=json.dumps([detail[0]["id"]]))
+    assert r.status_code == 200
+    assert r.json()["perubahan"] == 1
+
+
+def test_bersihkan_terpilih_kosong(client):
+    c, f = client
+    r = _bersihkan(c, f, terpilih="[]")
+    assert r.status_code == 200
+    assert r.json()["perubahan"] == 0
 
 
 def test_urungkan_setelah_bersihkan(client):
@@ -91,41 +149,3 @@ def test_audit_log_bisa_diunduh(client):
     baris = [json.loads(b) for b in r.text.strip().splitlines()]
     assert len(baris) == data["perubahan"]
     assert all("kode" in b and "nilai_lama" in b for b in baris)
-
-
-def _bersihkan(client, path, grup_aktif=None):
-    data = {}
-    if grup_aktif is not None:
-        data["grup_aktif"] = json.dumps(grup_aktif)
-    with open(path, "rb") as fp:
-        return client.post(
-            "/api/bersihkan",
-            files={"file": ("data.xlsx", fp, "application/octet-stream")},
-            data=data,
-        )
-
-
-def test_periksa_mengembalikan_grup(client):
-    c, f = client
-    data = _unggah(c, f).json()
-    grup = data["lembar"][0]["grup"]
-    assert grup, "fixture '  Ani  ' seharusnya menghasilkan perbaikan"
-    assert all("kunci" in g and "jumlah" in g for g in grup)
-
-
-def test_bersihkan_semua_centang_dikosongkan(client):
-    c, f = client
-    r = _bersihkan(c, f, grup_aktif=[])
-    assert r.status_code == 200
-    assert r.json()["perubahan"] == 0
-
-
-def test_bersihkan_hanya_grup_tercentang(client):
-    c, f = client
-    data = _unggah(c, f).json()
-    kunci = [f"0|{g['kunci']}" for g in data["lembar"][0]["grup"] if g["aman"]]
-    assert kunci
-    r = _bersihkan(c, f, grup_aktif=kunci)
-    assert r.status_code == 200
-    n_semua = _bersihkan(c, f).json()["perubahan"]
-    assert r.json()["perubahan"] == n_semua
